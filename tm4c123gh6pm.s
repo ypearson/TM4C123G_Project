@@ -51,219 +51,200 @@
 
 _vectors:
 
-/* Processor Exceptions */
+    .long     Stack                       // Top of Stack
+    .long     Reset_Handler               // Reset Handler
+    .long     NMI_Handler                 // NMI Handler
+    .long     HardFault_Handler           // Hard Fault Handler
+    .long     MemManage_Handler           // MPU Fault Handler
+    .long     BusFault_Handler            // Bus Fault Handler
+    .long     UsageFault_Handler          // Usage Fault Handler
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     SVC_Handler                 // SVCall Handler
+    .long     DebugMon_Handler            // Debug Monitor Handler
+    .long     0                           // Reserved
+    .long     PendSV_Handler              // PendSV Handler
+    .long     SysTick_Handler             // SysTick Handler
+    .long     GPIOPortA_Handler           // GPIO Port A
+    .long     GPIOPortB_Handler           // GPIO Port B
+    .long     GPIOPortC_Handler           // GPIO Port C
+    .long     GPIOPortD_Handler           // GPIO Port D
+    .long     GPIOPortE_Handler           // GPIO Port E
+    .long     UART0_Handler               // UART0 Rx and Tx
+    .long     UART1_Handler               // UART1 Rx and Tx
+    .long     SSI0_Handler                // SSI0 Rx and Tx
+    .long     I2C0_Handler                // I2C0 Master and Slave
+    .long     PWM0Fault_Handler           // PWM 0 Fault
+    .long     PWM0Generator0_Handler      // PWM 0 Generator 0
+    .long     PWM0Generator1_Handler      // PWM 0 Generator 1
+    .long     PWM0Generator2_Handler      // PWM 0 Generator 2
+    .long     Quadrature0_Handler         // Quadrature Encoder 0
+    .long     ADC0Seq0_Handler            // ADC0 Sequence 0
+    .long     ADC0Seq1_Handler            // ADC0 Sequence 1
+    .long     ADC0Seq2_Handler            // ADC0 Sequence 2
+    .long     ADC0Seq3_Handler            // ADC0 Sequence 3
+    .long     WDT_Handler                 // Watchdog
+    .long     Timer0A_Handler             // Timer 0 subtimer A
+    .long     Timer0B_Handler             // Timer 0 subtimer B
+    .long     Timer1A_Handler             // Timer 1 subtimer A
+    .long     Timer1B_Handler             // Timer 1 subtimer B
+    .long     Timer2A_Handler             // Timer 2 subtimer A
+    .long     Timer2B_Handler             // Timer 2 subtimer B
+    .long     Comp0_Handler               // Analog Comp 0
+    .long     Comp1_Handler               // Analog Comp 1
+    .long     Comp2_Handler               // Analog Comp 2
+    .long     SysCtl_Handler              // System Control
+    .long     FlashCtl_Handler            // Flash Control
+    .long     GPIOPortF_Handler           // GPIO Port F
+    .long     GPIOPortG_Handler           // GPIO Port G
+    .long     GPIOPortH_Handler           // GPIO Port H
+    .long     UART2_Handler               // UART2 Rx and Tx
+    .long     SSI1_Handler                // SSI1 Rx and Tx
+    .long     Timer3A_Handler             // Timer 3 subtimer A
+    .long     Timer3B_Handler             // Timer 3 subtimer B
+    .long     I2C1_Handler                // I2C1 Master and Slave
+    .long     Quadrature1_Handler         // Quadrature Encoder 1
+    .long     CAN0_Handler                // CAN0
+    .long     CAN1_Handler                // CAN1
+    .long     CAN2_Handler                // CAN2
+    .long     Ethernet_Handler            // Ethernet
+    .long     Hibernate_Handler           // Hibernate
+    .long     USB0_Handler                // USB0
+    .long     PWM0Generator3_Handler      // PWM 0 Generator 3
+    .long     uDMA_Handler                // uDMA Software Transfer
+    .long     uDMA_Error                  // uDMA Error
+    .long     ADC1Seq0_Handler            // ADC1 Sequence 0
+    .long     ADC1Seq1_Handler            // ADC1 Sequence 1
+    .long     ADC1Seq2_Handler            // ADC1 Sequence 2
+    .long     ADC1Seq3_Handler            // ADC1 Sequence 3
+    .long     I2S0_Handler                // I2S0
+    .long     ExtBus_Handler              // External Bus Interface 0
+    .long     GPIOPortJ_Handler           // GPIO Port J
+    .long     GPIOPortK_Handler           // GPIO Port K
+    .long     GPIOPortL_Handler           // GPIO Port L
+    .long     SSI2_Handler                // SSI2 Rx and Tx
+    .long     SSI3_Handler                // SSI3 Rx and Tx
+    .long     UART3_Handler               // UART3 Rx and Tx
+    .long     UART4_Handler               // UART4 Rx and Tx
+    .long     UART5_Handler               // UART5 Rx and Tx
+    .long     UART6_Handler               // UART6 Rx and Tx
+    .long     UART7_Handler               // UART7 Rx and Tx
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     I2C2_Handler                // I2C2 Master and Slave
+    .long     I2C3_Handler                // I2C3 Master and Slave
+    .long     Timer4A_Handler             // Timer 4 subtimer A
+    .long     Timer4B_Handler             // Timer 4 subtimer B
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     0                           // Reserved
+    .long     Timer5A_Handler             // Timer 5 subtimer A
+    .long     Timer5B_Handler             // Timer 5 subtimer B
+    .long     WideTimer0A_Handler         // Wide Timer 0 subtimer A
+    .long     WideTimer0B_Handler         // Wide Timer 0 subtimer B
+    .long     WideTimer1A_Handler         // Wide Timer 1 subtimer A
+    .long     WideTimer1B_Handler         // Wide Timer 1 subtimer B
+    .long     WideTimer2A_Handler         // Wide Timer 2 subtimer A
+    .long     WideTimer2B_Handler         // Wide Timer 2 subtimer B
+    .long     WideTimer3A_Handler         // Wide Timer 3 subtimer A
+    .long     WideTimer3B_Handler         // Wide Timer 3 subtimer B
+    .long     WideTimer4A_Handler         // Wide Timer 4 subtimer A
+    .long     WideTimer4B_Handler         // Wide Timer 4 subtimer B
+    .long     WideTimer5A_Handler         // Wide Timer 5 subtimer A
+    .long     WideTimer5B_Handler         // Wide Timer 5 subtimer B
+    .long     FPU_Handler                 // FPU
+    .long     PECI0_Handler               // PECI 0
+    .long     LPC0_Handler                // LPC 0
+    .long     I2C4_Handler                // I2C4 Master and Slave
+    .long     I2C5_Handler                // I2C5 Master and Slave
+    .long     GPIOPortM_Handler           // GPIO Port M
+    .long     GPIOPortN_Handler           // GPIO Port N
+    .long     Quadrature2_Handler         // Quadrature Encoder 2
+    .long     Fan0_Handler                // Fan 0
+    .long     0                           // Reserved
+    .long     GPIOPortP_Handler           // GPIO Port P (Summary or P0)
+    .long     GPIOPortP1_Handler          // GPIO Port P1
+    .long     GPIOPortP2_Handler          // GPIO Port P2
+    .long     GPIOPortP3_Handler          // GPIO Port P3
+    .long     GPIOPortP4_Handler          // GPIO Port P4
+    .long     GPIOPortP5_Handler          // GPIO Port P5
+    .long     GPIOPortP6_Handler          // GPIO Port P6
+    .long     GPIOPortP7_Handler          // GPIO Port P7
+    .long     GPIOPortQ_Handler           // GPIO Port Q (Summary or Q0)
+    .long     GPIOPortQ1_Handler          // GPIO Port Q1
+    .long     GPIOPortQ2_Handler          // GPIO Port Q2
+    .long     GPIOPortQ3_Handler          // GPIO Port Q3
+    .long     GPIOPortQ4_Handler          // GPIO Port Q4
+    .long     GPIOPortQ5_Handler          // GPIO Port Q5
+    .long     GPIOPortQ6_Handler          // GPIO Port Q6
+    .long     GPIOPortQ7_Handler          // GPIO Port Q7
+    .long     GPIOPortR_Handler           // GPIO Port R
+    .long     GPIOPortS_Handler           // GPIO Port S
+    .long     PWM1Generator0_Handler      // PWM 1 Generator 0
+    .long     PWM1Generator1_Handler      // PWM 1 Generator 1
+    .long     PWM1Generator2_Handler      // PWM 1 Generator 2
+    .long     PWM1Generator3_Handler      // PWM 1 Generator 3
+    .long     PWM1Fault_Handler           // PWM 1 Fault
 
-    .word   IDLE_STACK          /* Vector  0: Reset stack pointer */
-    .word   __start             /* Vector  1: Reset vector */
-    .word   tiva_nmi            /* Vector  2: Non-Maskable Interrupt (NMI) */
-    .word   tiva_hardfault      /* Vector  3: Hard fault */
-    .word   tiva_mpu            /* Vector  4: Memory management (MPU) */
-    .word   tiva_busfault       /* Vector  5: Bus fault */
-    .word   tiva_usagefault     /* Vector  6: Usage fault */
-    .word   tiva_reserved       /* Vector  7: Reserved */
-    .word   tiva_reserved       /* Vector  8: Reserved */
-    .word   tiva_reserved       /* Vector  9: Reserved */
-    .word   tiva_reserved       /* Vector 10: Reserved */
-    .word   tiva_svcall         /* Vector 11: SVC call */
-    .word   tiva_dbgmonitor     /* Vector 12: Debug monitor */
-    .word   tiva_reserved       /* Vector 13: Reserved */
-    .word   tiva_pendsv         /* Vector 14: Pendable system service request */
-    .word   tiva_systick        /* Vector 15: System tick */
-
-    .long     Stack                       ; Top of Stack
-    .long     Reset_Handler               ; Reset Handler
-    .long     NMI_Handler                 ; NMI Handler
-    .long     HardFault_Handler           ; Hard Fault Handler
-    .long     MemManage_Handler           ; MPU Fault Handler
-    .long     BusFault_Handler            ; Bus Fault Handler
-    .long     UsageFault_Handler          ; Usage Fault Handler
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     SVC_Handler                 ; SVCall Handler
-    .long     DebugMon_Handler            ; Debug Monitor Handler
-    .long     0                           ; Reserved
-    .long     PendSV_Handler              ; PendSV Handler
-    .long     SysTick_Handler             ; SysTick Handler
-    .long     GPIOPortA_Handler           ; GPIO Port A
-    .long     GPIOPortB_Handler           ; GPIO Port B
-    .long     GPIOPortC_Handler           ; GPIO Port C
-    .long     GPIOPortD_Handler           ; GPIO Port D
-    .long     GPIOPortE_Handler           ; GPIO Port E
-    .long     UART0_Handler               ; UART0 Rx and Tx
-    .long     UART1_Handler               ; UART1 Rx and Tx
-    .long     SSI0_Handler                ; SSI0 Rx and Tx
-    .long     I2C0_Handler                ; I2C0 Master and Slave
-    .long     PWM0Fault_Handler           ; PWM 0 Fault
-    .long     PWM0Generator0_Handler      ; PWM 0 Generator 0
-    .long     PWM0Generator1_Handler      ; PWM 0 Generator 1
-    .long     PWM0Generator2_Handler      ; PWM 0 Generator 2
-    .long     Quadrature0_Handler         ; Quadrature Encoder 0
-    .long     ADC0Seq0_Handler            ; ADC0 Sequence 0
-    .long     ADC0Seq1_Handler            ; ADC0 Sequence 1
-    .long     ADC0Seq2_Handler            ; ADC0 Sequence 2
-    .long     ADC0Seq3_Handler            ; ADC0 Sequence 3
-    .long     WDT_Handler                 ; Watchdog
-    .long     Timer0A_Handler             ; Timer 0 subtimer A
-    .long     Timer0B_Handler             ; Timer 0 subtimer B
-    .long     Timer1A_Handler             ; Timer 1 subtimer A
-    .long     Timer1B_Handler             ; Timer 1 subtimer B
-    .long     Timer2A_Handler             ; Timer 2 subtimer A
-    .long     Timer2B_Handler             ; Timer 2 subtimer B
-    .long     Comp0_Handler               ; Analog Comp 0
-    .long     Comp1_Handler               ; Analog Comp 1
-    .long     Comp2_Handler               ; Analog Comp 2
-    .long     SysCtl_Handler              ; System Control
-    .long     FlashCtl_Handler            ; Flash Control
-    .long     GPIOPortF_Handler           ; GPIO Port F
-    .long     GPIOPortG_Handler           ; GPIO Port G
-    .long     GPIOPortH_Handler           ; GPIO Port H
-    .long     UART2_Handler               ; UART2 Rx and Tx
-    .long     SSI1_Handler                ; SSI1 Rx and Tx
-    .long     Timer3A_Handler             ; Timer 3 subtimer A
-    .long     Timer3B_Handler             ; Timer 3 subtimer B
-    .long     I2C1_Handler                ; I2C1 Master and Slave
-    .long     Quadrature1_Handler         ; Quadrature Encoder 1
-    .long     CAN0_Handler                ; CAN0
-    .long     CAN1_Handler                ; CAN1
-    .long     CAN2_Handler                ; CAN2
-    .long     Ethernet_Handler            ; Ethernet
-    .long     Hibernate_Handler           ; Hibernate
-    .long     USB0_Handler                ; USB0
-    .long     PWM0Generator3_Handler      ; PWM 0 Generator 3
-    .long     uDMA_Handler                ; uDMA Software Transfer
-    .long     uDMA_Error                  ; uDMA Error
-    .long     ADC1Seq0_Handler            ; ADC1 Sequence 0
-    .long     ADC1Seq1_Handler            ; ADC1 Sequence 1
-    .long     ADC1Seq2_Handler            ; ADC1 Sequence 2
-    .long     ADC1Seq3_Handler            ; ADC1 Sequence 3
-    .long     I2S0_Handler                ; I2S0
-    .long     ExtBus_Handler              ; External Bus Interface 0
-    .long     GPIOPortJ_Handler           ; GPIO Port J
-    .long     GPIOPortK_Handler           ; GPIO Port K
-    .long     GPIOPortL_Handler           ; GPIO Port L
-    .long     SSI2_Handler                ; SSI2 Rx and Tx
-    .long     SSI3_Handler                ; SSI3 Rx and Tx
-    .long     UART3_Handler               ; UART3 Rx and Tx
-    .long     UART4_Handler               ; UART4 Rx and Tx
-    .long     UART5_Handler               ; UART5 Rx and Tx
-    .long     UART6_Handler               ; UART6 Rx and Tx
-    .long     UART7_Handler               ; UART7 Rx and Tx
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     I2C2_Handler                ; I2C2 Master and Slave
-    .long     I2C3_Handler                ; I2C3 Master and Slave
-    .long     Timer4A_Handler             ; Timer 4 subtimer A
-    .long     Timer4B_Handler             ; Timer 4 subtimer B
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     0                           ; Reserved
-    .long     Timer5A_Handler             ; Timer 5 subtimer A
-    .long     Timer5B_Handler             ; Timer 5 subtimer B
-    .long     WideTimer0A_Handler         ; Wide Timer 0 subtimer A
-    .long     WideTimer0B_Handler         ; Wide Timer 0 subtimer B
-    .long     WideTimer1A_Handler         ; Wide Timer 1 subtimer A
-    .long     WideTimer1B_Handler         ; Wide Timer 1 subtimer B
-    .long     WideTimer2A_Handler         ; Wide Timer 2 subtimer A
-    .long     WideTimer2B_Handler         ; Wide Timer 2 subtimer B
-    .long     WideTimer3A_Handler         ; Wide Timer 3 subtimer A
-    .long     WideTimer3B_Handler         ; Wide Timer 3 subtimer B
-    .long     WideTimer4A_Handler         ; Wide Timer 4 subtimer A
-    .long     WideTimer4B_Handler         ; Wide Timer 4 subtimer B
-    .long     WideTimer5A_Handler         ; Wide Timer 5 subtimer A
-    .long     WideTimer5B_Handler         ; Wide Timer 5 subtimer B
-    .long     FPU_Handler                 ; FPU
-    .long     PECI0_Handler               ; PECI 0
-    .long     LPC0_Handler                ; LPC 0
-    .long     I2C4_Handler                ; I2C4 Master and Slave
-    .long     I2C5_Handler                ; I2C5 Master and Slave
-    .long     GPIOPortM_Handler           ; GPIO Port M
-    .long     GPIOPortN_Handler           ; GPIO Port N
-    .long     Quadrature2_Handler         ; Quadrature Encoder 2
-    .long     Fan0_Handler                ; Fan 0
-    .long     0                           ; Reserved
-    .long     GPIOPortP_Handler           ; GPIO Port P (Summary or P0)
-    .long     GPIOPortP1_Handler          ; GPIO Port P1
-    .long     GPIOPortP2_Handler          ; GPIO Port P2
-    .long     GPIOPortP3_Handler          ; GPIO Port P3
-    .long     GPIOPortP4_Handler          ; GPIO Port P4
-    .long     GPIOPortP5_Handler          ; GPIO Port P5
-    .long     GPIOPortP6_Handler          ; GPIO Port P6
-    .long     GPIOPortP7_Handler          ; GPIO Port P7
-    .long     GPIOPortQ_Handler           ; GPIO Port Q (Summary or Q0)
-    .long     GPIOPortQ1_Handler          ; GPIO Port Q1
-    .long     GPIOPortQ2_Handler          ; GPIO Port Q2
-    .long     GPIOPortQ3_Handler          ; GPIO Port Q3
-    .long     GPIOPortQ4_Handler          ; GPIO Port Q4
-    .long     GPIOPortQ5_Handler          ; GPIO Port Q5
-    .long     GPIOPortQ6_Handler          ; GPIO Port Q6
-    .long     GPIOPortQ7_Handler          ; GPIO Port Q7
-    .long     GPIOPortR_Handler           ; GPIO Port R
-    .long     GPIOPortS_Handler           ; GPIO Port S
-    .long     PWM1Generator0_Handler      ; PWM 1 Generator 0
-    .long     PWM1Generator1_Handler      ; PWM 1 Generator 1
-    .long     PWM1Generator2_Handler      ; PWM 1 Generator 2
-    .long     PWM1Generator3_Handler      ; PWM 1 Generator 3
-    .long     PWM1Fault_Handler           ; PWM 1 Fault
-/* External Interrupts */
-
-/* External Interrupts */
-
-#undef VECTOR
-#define VECTOR(l,i) .word l
-
-#undef UNUSED
-#define UNUSED(i) .word tiva_reserved
-
-#include "chip/chip/tiva_vectors.h"
-    .size   _vectors, .-_vectors
 
 /************************************************************************************
  * .text
  ************************************************************************************/
 
+
+
+.macro  HANDLER, label
+    .thumb_func
+\label:
+    b       label
+    .endm
+
+
+
     .text
     .type   handlers, function
     .thumb_func
 handlers:
-    HANDLER tiva_reserved, TIVA_IRQ_RESERVED        /* Unexpected/reserved vector */
-    HANDLER tiva_nmi, TIVA_IRQ_NMI                  /* Vector  2: Non-Maskable Interrupt (NMI) */
-    HANDLER tiva_hardfault, TIVA_IRQ_HARDFAULT      /* Vector  3: Hard fault */
-    HANDLER tiva_mpu, TIVA_IRQ_MEMFAULT             /* Vector  4: Memory management (MPU) */
-    HANDLER tiva_busfault, TIVA_IRQ_BUSFAULT        /* Vector  5: Bus fault */
-    HANDLER tiva_usagefault, TIVA_IRQ_USAGEFAULT    /* Vector  6: Usage fault */
-    HANDLER tiva_svcall, TIVA_IRQ_SVCALL            /* Vector 11: SVC call */
-    HANDLER tiva_dbgmonitor, TIVA_IRQ_DBGMONITOR    /* Vector 12: Debug Monitor */
-    HANDLER tiva_pendsv, TIVA_IRQ_PENDSV            /* Vector 14: Penable system service request */
-    HANDLER tiva_systick, TIVA_IRQ_SYSTICK          /* Vector 15: System tick */
+    HANDLER tiva_reserved        /* Unexpected/reserved vector */
+    HANDLER tiva_nmi /* Vector  2: Non-Maskable Interrupt (NMI) */
+    HANDLER tiva_hardfault      /* Vector  3: Hard fault */
+    HANDLER tiva_mpu              /* Vector  4: Memory management (MPU) */
+    HANDLER tiva_busfault        /* Vector  5: Bus fault */
+    HANDLER tiva_usagefault    /* Vector  6: Usage fault */
+    HANDLER tiva_svcall            /* Vector 11: SVC call */
+    HANDLER tiva_dbgmonitor    /* Vector 12: Debug Monitor */
+    HANDLER tiva_pendsv            /* Vector 14: Penable system service request */
+    HANDLER tiva_systick          /* Vector 15: System tick */
 
-#undef VECTOR
-#define VECTOR(l,i) HANDLER l, i
 
-#undef UNUSED
-#define UNUSED(i)
 
-#include "chip/chip/tiva_vectors.h"
+
+NMI_Handler:
+HardFault_Handler:
+MemManage_Handler:
+BusFault_Handler:
+UsageFault_Handler:
 
 /* Common IRQ handling logic.  On entry here, the return stack is on either
  * the PSP or the MSP and looks like the following:
