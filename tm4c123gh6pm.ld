@@ -39,7 +39,7 @@ SECTIONS
         _etext = .;
     } > FLASH
 
-    .data : 
+    .data :
     {
         _data = .;
         *(vtable)
@@ -49,12 +49,12 @@ SECTIONS
 
     .bss :
     {
-        _bss = .;
+        __bss_start__ = .;
         *(.bss*)
         *(COMMON)
-        _ebss = .;
+        __bss_end__ = .;
     } > SRAM
-    
+
     .ARM.exidx :
     {
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)

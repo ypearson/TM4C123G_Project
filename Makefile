@@ -1,21 +1,31 @@
-CC=/home/ypearson/x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
+CC=/home/ypearson/arm/arm-unknown-eabi/bin/arm-unknown-eabi-gcc
+LD=/home/ypearson/arm/arm-unknown-eabi/bin/arm-unknown-eabi-ld
+AS=/home/ypearson/arm/arm-unknown-eabi/bin/arm-unknown-eabi-as
+
 TARGET=run
-CFLAGS= -c -g -O0
+CFLAGS= -c -g -nostartfiles -mcpu=cortex-m4 -mthumb
+AFLAGS= -c -g -mcpu=cortex-m4 -mthumb
 LDFLAGS=
 
+CSRC= main.c \
 
-SRC= cfifo.c \
-	main.c
+ASRC = tm4c123gh6pm.s \
 
-OBJ=$(SRC:.c=.o)
+COBJ=$(CSRC:.c=.o)
+AOBJ=$(ASRC:.s=.o)
+
+OBJ = $(COBJ) $(AOBJ)
 
 all: clean $(TARGET)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
+%.o: %.s
+	$(AS) $(AFLAGS) $< -o $@
+
 $(TARGET): $(OBJ)
-	$(CC) $(LDFLAGS) $^ -o $@
+	$(LD) -T ld.script $(LDFLAGS) $^ -o $@
 
 clean:
 	@rm -f *.o

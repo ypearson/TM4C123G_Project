@@ -2,7 +2,12 @@
 
 int main(void)
 {
-  while(1);	
+  int i = 0;
+
+  for(i=0; i < 3; i++)
+  {
+  	
+  }
 
   return 0;
 }
