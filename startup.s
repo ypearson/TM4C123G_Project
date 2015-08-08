@@ -1,674 +1,415 @@
-; <<< Use Configuration Wizard in Context Menu >>>
-;******************************************************************************
-;
-; startup_rvmdk.S - Startup code for use with Keil's uVision.
-;
-; Copyright (c) 2012 Texas Instruments Incorporated.  All rights reserved.
-; Software License Agreement
-; 
-; Texas Instruments (TI) is supplying this software for use solely and
-; exclusively on TI's microcontroller products. The software is owned by
-; TI and/or its suppliers, and is protected under applicable copyright
-; laws. You may not combine this software with "viral" open-source
-; software in order to form a larger program.
-; 
-; THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
-; NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
-; NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-; A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
-; CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
-; DAMAGES, FOR ANY REASON WHATSOEVER.
-; 
-; This is part of revision 9453 of the EK-LM4F120XL Firmware Package.
-;
-;******************************************************************************
-; Edited to conform with ISR names as described in 
-;   "Embedded Systems: Introduction to ARM Cortex M Microcontrollers",
-;   ISBN: 978-1469998749, Jonathan Valvano, copyright (c) 2012
-;   "Embedded Systems: Real Time Interfacing to ARM Cortex M Microcontrollers",
-;   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2012
-;   "Embedded Systems: Real-Time Operating Systems for ARM Cortex M Microcontrollers",
-;   ISBN: 978-1466468863, Jonathan Valvano, copyright (c) 2013
-;
-;******************************************************************************
-;
-; <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
-;
-;******************************************************************************
-Stack   EQU     0x00000400
+/* Memory Map ***********************************************************************/
+/*
+ * 0x0000:0000 - Beginning of FLASH. Address of vectors (if not using bootloader)
+ * 0x0002:0000 - Address of vectors if using bootloader
+ * 0x0003:ffff - End of flash
+ * 0x2000:0000 - Start of SRAM and start of .data (_sdata)
+ *             - End of .data (_edata) and start of .bss (_sbss)
+ *             - End of .bss (_ebss) and bottom of idle stack
+ *             - _ebss + CONFIG_IDLETHREAD_STACKSIZE = end of idle stack, start of heap
+ * 0x2000:ffff - End of SRAM and end of heap
+ */
 
-;******************************************************************************
-;
-; <o> Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
-;
-;******************************************************************************
-Heap    EQU     0x00000000
+#define STACK (_ebss + 4096)
 
-;******************************************************************************
-;
-; Allocate space for the stack.
-;
-;******************************************************************************
-        AREA    STACK, NOINIT, READWRITE, ALIGN=3
-StackMem
-        SPACE   Stack
-__initial_sp
+/************************************************************************************
+ * Global Symbols
+ ************************************************************************************/
 
-;******************************************************************************
-;
-; Allocate space for the heap.
-;
-;******************************************************************************
-        AREA    HEAP, NOINIT, READWRITE, ALIGN=3
-__heap_base
-HeapMem
-        SPACE   Heap
-__heap_limit
+    .SYNTAX     unified
+    .CPU        cortex-m4
+    .THUMB
+    .FILE       "tm4c123gh6pm.s"
+    .GLOBL      __start
 
-;******************************************************************************
-;
-; Indicate that the code in this file preserves 8-byte alignment of the stack.
-;
-;******************************************************************************
-        PRESERVE8
+/************************************************************************************
+ * Vectors
+ ************************************************************************************/
 
-;******************************************************************************
-;
-; Place code into the reset code section.
-;
-;******************************************************************************
-        AREA    RESET, CODE, READONLY
-        THUMB
+    .section    .vectors, "ax"
+    .code       16
+    .align      2
+    .globl      _vectors
+    .type       _vectors, function
 
-;******************************************************************************
-;
-; The vector table.
-;
-;******************************************************************************
-        EXPORT  __Vectors
-__Vectors
-        DCD     StackMem + Stack            ; Top of Stack
-        DCD     Reset_Handler               ; Reset Handler
-        DCD     NMI_Handler                 ; NMI Handler
-        DCD     HardFault_Handler           ; Hard Fault Handler
-        DCD     MemManage_Handler           ; MPU Fault Handler
-        DCD     BusFault_Handler            ; Bus Fault Handler
-        DCD     UsageFault_Handler          ; Usage Fault Handler
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     SVC_Handler                 ; SVCall Handler
-        DCD     DebugMon_Handler            ; Debug Monitor Handler
-        DCD     0                           ; Reserved
-        DCD     PendSV_Handler              ; PendSV Handler
-        DCD     SysTick_Handler             ; SysTick Handler
-        DCD     GPIOPortA_Handler           ; GPIO Port A
-        DCD     GPIOPortB_Handler           ; GPIO Port B
-        DCD     GPIOPortC_Handler           ; GPIO Port C
-        DCD     GPIOPortD_Handler           ; GPIO Port D
-        DCD     GPIOPortE_Handler           ; GPIO Port E
-        DCD     UART0_Handler               ; UART0 Rx and Tx
-        DCD     UART1_Handler               ; UART1 Rx and Tx
-        DCD     SSI0_Handler                ; SSI0 Rx and Tx
-        DCD     I2C0_Handler                ; I2C0 Master and Slave
-        DCD     PWM0Fault_Handler           ; PWM 0 Fault
-        DCD     PWM0Generator0_Handler      ; PWM 0 Generator 0
-        DCD     PWM0Generator1_Handler      ; PWM 0 Generator 1
-        DCD     PWM0Generator2_Handler      ; PWM 0 Generator 2
-        DCD     Quadrature0_Handler         ; Quadrature Encoder 0
-        DCD     ADC0Seq0_Handler            ; ADC0 Sequence 0
-        DCD     ADC0Seq1_Handler            ; ADC0 Sequence 1
-        DCD     ADC0Seq2_Handler            ; ADC0 Sequence 2
-        DCD     ADC0Seq3_Handler            ; ADC0 Sequence 3
-        DCD     WDT_Handler                 ; Watchdog
-        DCD     Timer0A_Handler             ; Timer 0 subtimer A
-        DCD     Timer0B_Handler             ; Timer 0 subtimer B
-        DCD     Timer1A_Handler             ; Timer 1 subtimer A
-        DCD     Timer1B_Handler             ; Timer 1 subtimer B
-        DCD     Timer2A_Handler             ; Timer 2 subtimer A
-        DCD     Timer2B_Handler             ; Timer 2 subtimer B
-        DCD     Comp0_Handler               ; Analog Comp 0
-        DCD     Comp1_Handler               ; Analog Comp 1
-        DCD     Comp2_Handler               ; Analog Comp 2
-        DCD     SysCtl_Handler              ; System Control
-        DCD     FlashCtl_Handler            ; Flash Control
-        DCD     GPIOPortF_Handler           ; GPIO Port F
-        DCD     GPIOPortG_Handler           ; GPIO Port G
-        DCD     GPIOPortH_Handler           ; GPIO Port H
-        DCD     UART2_Handler               ; UART2 Rx and Tx
-        DCD     SSI1_Handler                ; SSI1 Rx and Tx
-        DCD     Timer3A_Handler             ; Timer 3 subtimer A
-        DCD     Timer3B_Handler             ; Timer 3 subtimer B
-        DCD     I2C1_Handler                ; I2C1 Master and Slave
-        DCD     Quadrature1_Handler         ; Quadrature Encoder 1
-        DCD     CAN0_Handler                ; CAN0
-        DCD     CAN1_Handler                ; CAN1
-        DCD     CAN2_Handler                ; CAN2
-        DCD     Ethernet_Handler            ; Ethernet
-        DCD     Hibernate_Handler           ; Hibernate
-        DCD     USB0_Handler                ; USB0
-        DCD     PWM0Generator3_Handler      ; PWM 0 Generator 3
-        DCD     uDMA_Handler                ; uDMA Software Transfer
-        DCD     uDMA_Error                  ; uDMA Error
-        DCD     ADC1Seq0_Handler            ; ADC1 Sequence 0
-        DCD     ADC1Seq1_Handler            ; ADC1 Sequence 1
-        DCD     ADC1Seq2_Handler            ; ADC1 Sequence 2
-        DCD     ADC1Seq3_Handler            ; ADC1 Sequence 3
-        DCD     I2S0_Handler                ; I2S0
-        DCD     ExtBus_Handler              ; External Bus Interface 0
-        DCD     GPIOPortJ_Handler           ; GPIO Port J
-        DCD     GPIOPortK_Handler           ; GPIO Port K
-        DCD     GPIOPortL_Handler           ; GPIO Port L
-        DCD     SSI2_Handler                ; SSI2 Rx and Tx
-        DCD     SSI3_Handler                ; SSI3 Rx and Tx
-        DCD     UART3_Handler               ; UART3 Rx and Tx
-        DCD     UART4_Handler               ; UART4 Rx and Tx
-        DCD     UART5_Handler               ; UART5 Rx and Tx
-        DCD     UART6_Handler               ; UART6 Rx and Tx
-        DCD     UART7_Handler               ; UART7 Rx and Tx
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     I2C2_Handler                ; I2C2 Master and Slave
-        DCD     I2C3_Handler                ; I2C3 Master and Slave
-        DCD     Timer4A_Handler             ; Timer 4 subtimer A
-        DCD     Timer4B_Handler             ; Timer 4 subtimer B
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     0                           ; Reserved
-        DCD     Timer5A_Handler             ; Timer 5 subtimer A
-        DCD     Timer5B_Handler             ; Timer 5 subtimer B
-        DCD     WideTimer0A_Handler         ; Wide Timer 0 subtimer A
-        DCD     WideTimer0B_Handler         ; Wide Timer 0 subtimer B
-        DCD     WideTimer1A_Handler         ; Wide Timer 1 subtimer A
-        DCD     WideTimer1B_Handler         ; Wide Timer 1 subtimer B
-        DCD     WideTimer2A_Handler         ; Wide Timer 2 subtimer A
-        DCD     WideTimer2B_Handler         ; Wide Timer 2 subtimer B
-        DCD     WideTimer3A_Handler         ; Wide Timer 3 subtimer A
-        DCD     WideTimer3B_Handler         ; Wide Timer 3 subtimer B
-        DCD     WideTimer4A_Handler         ; Wide Timer 4 subtimer A
-        DCD     WideTimer4B_Handler         ; Wide Timer 4 subtimer B
-        DCD     WideTimer5A_Handler         ; Wide Timer 5 subtimer A
-        DCD     WideTimer5B_Handler         ; Wide Timer 5 subtimer B
-        DCD     FPU_Handler                 ; FPU
-        DCD     PECI0_Handler               ; PECI 0
-        DCD     LPC0_Handler                ; LPC 0
-        DCD     I2C4_Handler                ; I2C4 Master and Slave
-        DCD     I2C5_Handler                ; I2C5 Master and Slave
-        DCD     GPIOPortM_Handler           ; GPIO Port M
-        DCD     GPIOPortN_Handler           ; GPIO Port N
-        DCD     Quadrature2_Handler         ; Quadrature Encoder 2
-        DCD     Fan0_Handler                ; Fan 0
-        DCD     0                           ; Reserved
-        DCD     GPIOPortP_Handler           ; GPIO Port P (Summary or P0)
-        DCD     GPIOPortP1_Handler          ; GPIO Port P1
-        DCD     GPIOPortP2_Handler          ; GPIO Port P2
-        DCD     GPIOPortP3_Handler          ; GPIO Port P3
-        DCD     GPIOPortP4_Handler          ; GPIO Port P4
-        DCD     GPIOPortP5_Handler          ; GPIO Port P5
-        DCD     GPIOPortP6_Handler          ; GPIO Port P6
-        DCD     GPIOPortP7_Handler          ; GPIO Port P7
-        DCD     GPIOPortQ_Handler           ; GPIO Port Q (Summary or Q0)
-        DCD     GPIOPortQ1_Handler          ; GPIO Port Q1
-        DCD     GPIOPortQ2_Handler          ; GPIO Port Q2
-        DCD     GPIOPortQ3_Handler          ; GPIO Port Q3
-        DCD     GPIOPortQ4_Handler          ; GPIO Port Q4
-        DCD     GPIOPortQ5_Handler          ; GPIO Port Q5
-        DCD     GPIOPortQ6_Handler          ; GPIO Port Q6
-        DCD     GPIOPortQ7_Handler          ; GPIO Port Q7
-        DCD     GPIOPortR_Handler           ; GPIO Port R
-        DCD     GPIOPortS_Handler           ; GPIO Port S
-        DCD     PWM1Generator0_Handler      ; PWM 1 Generator 0
-        DCD     PWM1Generator1_Handler      ; PWM 1 Generator 1
-        DCD     PWM1Generator2_Handler      ; PWM 1 Generator 2
-        DCD     PWM1Generator3_Handler      ; PWM 1 Generator 3
-        DCD     PWM1Fault_Handler           ; PWM 1 Fault
+_vectors:
 
-;******************************************************************************
-;
-; This is the code that gets called when the processor first starts execution
-; following a reset event.
-;
-;******************************************************************************
-        EXPORT  Reset_Handler
-Reset_Handler
-        ;
-        ; DO NOT ENABLE the floating-point unit.  This must be done here to handle the
-        ; case where main() uses floating-point and the function prologue saves
-        ; floating-point registers (which will fault if floating-point is not
-        ; enabled).  Any configuration of the floating-point unit using
-        ; DriverLib APIs must be done here prior to the floating-point unit
-        ; being enabled.
-        ;
-        ; Note that this does not use DriverLib since it might not be included
-        ; in this project.
-        ;
-;        MOVW    R0, #0xED88
-;        MOVT    R0, #0xE000
-;        LDR     R1, [R0]
-;        ORR     R1, #0x00F00000
-;        STR     R1, [R0]
+    .long     (_ebss + 4096)              /* Top of Stack */
+    .long     Reset_Handler               /* Reset Handler */
+    .long     NMI_Handler                 /* NMI Handler */
+    .long     HardFault_Handler           /* Hard Fault Handler */
+    .long     MemManage_Handler           /* MPU Fault Handler */
+    .long     BusFault_Handler            /* Bus Fault Handler */
+    .long     UsageFault_Handler          /* Usage Fault Handler */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     SVC_Handler                 /* SVCall Handler */
+    .long     DebugMon_Handler            /* Debug Monitor Handler */
+    .long     0                           /* Reserved */
+    .long     PendSV_Handler              /* PendSV Handler */
+    .long     SysTick_Handler             /* SysTick Handler */
+    .long     GPIOPortA_Handler           /* GPIO Port A */
+    .long     GPIOPortB_Handler           /* GPIO Port B */
+    .long     GPIOPortC_Handler           /* GPIO Port C */
+    .long     GPIOPortD_Handler           /* GPIO Port D */
+    .long     GPIOPortE_Handler           /* GPIO Port E */
+    .long     UART0_Handler               /* UART0 Rx and Tx */
+    .long     UART1_Handler               /* UART1 Rx and Tx */
+    .long     SSI0_Handler                /* SSI0 Rx and Tx */
+    .long     I2C0_Handler                /* I2C0 Master and Slave */
+    .long     PWM0Fault_Handler           /* PWM 0 Fault */
+    .long     PWM0Generator0_Handler      /* PWM 0 Generator 0 */
+    .long     PWM0Generator1_Handler      /* PWM 0 Generator 1 */
+    .long     PWM0Generator2_Handler      /* PWM 0 Generator 2 */
+    .long     Quadrature0_Handler         /* Quadrature Encoder 0 */
+    .long     ADC0Seq0_Handler            /* ADC0 Sequence 0 */
+    .long     ADC0Seq1_Handler            /* ADC0 Sequence 1 */
+    .long     ADC0Seq2_Handler            /* ADC0 Sequence 2 */
+    .long     ADC0Seq3_Handler            /* ADC0 Sequence 3 */
+    .long     WDT_Handler                 /* Watchdog */
+    .long     Timer0A_Handler             /* Timer 0 subtimer A  */
+    .long     Timer0B_Handler             /* Timer 0 subtimer B */
+    .long     Timer1A_Handler             /* Timer 1 subtimer A */
+    .long     Timer1B_Handler             /* Timer 1 subtimer B */
+    .long     Timer2A_Handler             /* Timer 2 subtimer A */
+    .long     Timer2B_Handler             /* Timer 2 subtimer B */
+    .long     Comp0_Handler               /* Analog Comp 0 */
+    .long     Comp1_Handler               /* Analog Comp 1 */
+    .long     Comp2_Handler               /* Analog Comp 2 */
+    .long     SysCtl_Handler              /* System Control */
+    .long     FlashCtl_Handler            /* Flash Control */
+    .long     GPIOPortF_Handler           /* GPIO Port F */
+    .long     GPIOPortG_Handler           /* GPIO Port G */
+    .long     GPIOPortH_Handler           /* GPIO Port H */
+    .long     UART2_Handler               /* UART2 Rx and Tx */
+    .long     SSI1_Handler                /* SSI1 Rx and Tx */
+    .long     Timer3A_Handler             /* Timer 3 subtimer A */
+    .long     Timer3B_Handler             /* Timer 3 subtimer B */
+    .long     I2C1_Handler                /* I2C1 Master and Slave */
+    .long     Quadrature1_Handler         /* Quadrature Encoder 1 */
+    .long     CAN0_Handler                /* CAN0 */
+    .long     CAN1_Handler                /* CAN1 */
+    .long     CAN2_Handler                /* CAN2 */
+    .long     Ethernet_Handler            /* Ethernet */
+    .long     Hibernate_Handler           /* Hibernate */
+    .long     USB0_Handler                /* USB0 */
+    .long     PWM0Generator3_Handler      /* PWM 0 Generator 3 */
+    .long     uDMA_Handler                /* uDMA Software Transfer */
+    .long     uDMA_Error                  /* uDMA Error */
+    .long     ADC1Seq0_Handler            /* ADC1 Sequence 0 */
+    .long     ADC1Seq1_Handler            /* ADC1 Sequence 1 */
+    .long     ADC1Seq2_Handler            /* ADC1 Sequence 2 */
+    .long     ADC1Seq3_Handler            /* ADC1 Sequence 3 */
+    .long     I2S0_Handler                /* I2S0 */
+    .long     ExtBus_Handler              /* External Bus Interface 0 */
+    .long     GPIOPortJ_Handler           /* GPIO Port J */
+    .long     GPIOPortK_Handler           /* GPIO Port K */
+    .long     GPIOPortL_Handler           /* GPIO Port L */
+    .long     SSI2_Handler                /* SSI2 Rx and Tx */
+    .long     SSI3_Handler                /* SSI3 Rx and Tx */
+    .long     UART3_Handler               /* UART3 Rx and Tx */
+    .long     UART4_Handler               /* UART4 Rx and Tx */
+    .long     UART5_Handler               /* UART5 Rx and Tx */
+    .long     UART6_Handler               /* UART6 Rx and Tx */
+    .long     UART7_Handler               /* UART7 Rx and Tx */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     I2C2_Handler                /* I2C2 Master and Slave */
+    .long     I2C3_Handler                /* I2C3 Master and Slave */
+    .long     Timer4A_Handler             /* Timer 4 subtimer A */
+    .long     Timer4B_Handler             /* Timer 4 subtimer B */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     0                           /* Reserved */
+    .long     Timer5A_Handler             /* Timer 5 subtimer A */
+    .long     Timer5B_Handler             /* Timer 5 subtimer B */
+    .long     WideTimer0A_Handler         /* Wide Timer 0 subtimer A */
+    .long     WideTimer0B_Handler         /* Wide Timer 0 subtimer B */
+    .long     WideTimer1A_Handler         /* Wide Timer 1 subtimer A */
+    .long     WideTimer1B_Handler         /* Wide Timer 1 subtimer B */
+    .long     WideTimer2A_Handler         /* Wide Timer 2 subtimer A */
+    .long     WideTimer2B_Handler         /* Wide Timer 2 subtimer B */
+    .long     WideTimer3A_Handler         /* Wide Timer 3 subtimer A */
+    .long     WideTimer3B_Handler         /* Wide Timer 3 subtimer B */
+    .long     WideTimer4A_Handler         /* Wide Timer 4 subtimer A */
+    .long     WideTimer4B_Handler         /* Wide Timer 4 subtimer B */
+    .long     WideTimer5A_Handler         /* Wide Timer 5 subtimer A */
+    .long     WideTimer5B_Handler         /* Wide Timer 5 subtimer B */
+    .long     FPU_Handler                 /* FPU */
+    .long     PECI0_Handler               /* PECI 0 */
+    .long     LPC0_Handler                /* LPC 0 */
+    .long     I2C4_Handler                /* I2C4 Master and Slave */
+    .long     I2C5_Handler                /* I2C5 Master and Slave */
+    .long     GPIOPortM_Handler           /* GPIO Port M */
+    .long     GPIOPortN_Handler           /* GPIO Port N */
+    .long     Quadrature2_Handler         /* Quadrature Encoder 2 */
+    .long     Fan0_Handler                /* Fan 0 */
+    .long     0                           /* Reserved */
+    .long     GPIOPortP_Handler           /* GPIO Port P (Summary or P0) */
+    .long     GPIOPortP1_Handler          /* GPIO Port P1 */
+    .long     GPIOPortP2_Handler          /* GPIO Port P2 */
+    .long     GPIOPortP3_Handler          /* GPIO Port P3 */
+    .long     GPIOPortP4_Handler          /* GPIO Port P4 */
+    .long     GPIOPortP5_Handler          /* GPIO Port P5 */
+    .long     GPIOPortP6_Handler          /* GPIO Port P6 */
+    .long     GPIOPortP7_Handler          /* GPIO Port P7 */
+    .long     GPIOPortQ_Handler           /* GPIO Port Q (Summary or Q0) */
+    .long     GPIOPortQ1_Handler          /* GPIO Port Q1 */
+    .long     GPIOPortQ2_Handler          /* GPIO Port Q2 */
+    .long     GPIOPortQ3_Handler          /* GPIO Port Q3 */
+    .long     GPIOPortQ4_Handler          /* GPIO Port Q4 */
+    .long     GPIOPortQ5_Handler          /* GPIO Port Q5 */
+    .long     GPIOPortQ6_Handler          /* GPIO Port Q6 */
+    .long     GPIOPortQ7_Handler          /* GPIO Port Q7 */
+    .long     GPIOPortR_Handler           /* GPIO Port R */
+    .long     GPIOPortS_Handler           /* GPIO Port S */
+    .long     PWM1Generator0_Handler      /* PWM 1 Generator 0 */
+    .long     PWM1Generator1_Handler      /* PWM 1 Generator 1 */
+    .long     PWM1Generator2_Handler      /* PWM 1 Generator 2 */
+    .long     PWM1Generator3_Handler      /* PWM 1 Generator 3 */
+    .long     PWM1Fault_Handler           /* PWM 1 Fault */
 
-        ;
-        ; Call the C library enty point that handles startup.  This will copy
-        ; the .data section initializers from flash to SRAM and zero fill the
-        ; .bss section.
-        ;
-        IMPORT  __main
-        B       __main
 
-;******************************************************************************
-;
-; This is the code that gets called when the processor receives a NMI.  This
-; simply enters an infinite loop, preserving the system state for examination
-; by a debugger.
-;
-;******************************************************************************
-NMI_Handler     PROC
-                EXPORT  NMI_Handler               [WEAK]
-                B       .
-                ENDP
+/************************************************************************************/
+.macro  HANDLER, label
+    .thumb_func
+\label:
+    b       \label
+    .endm
 
-;******************************************************************************
-;
-; This is the code that gets called when the processor receives a fault
-; interrupt.  This simply enters an infinite loop, preserving the system state
-; for examination by a debugger.
-;
-;******************************************************************************
-HardFault_Handler\
-                PROC
-                EXPORT  HardFault_Handler         [WEAK]
-                B       .
-                ENDP
+    .text
+    .type   handlers, function
+    .thumb_func
+handlers:
+    HANDLER Reserved_Handler        /* Unexpected/reserved vector */
+    HANDLER NMI_Handler             /* Vector  2: Non-Maskable Interrupt (NMI) */
+    HANDLER HardFault_Handler       /* Vector  3: Hard fault */
+    HANDLER MemManage_Handler       /* Vector  4: Memory management (MPU) */
+    HANDLER BusFault_Handler        /* Vector  5: Bus fault */
+    HANDLER UsageFault_Handler      /* Vector  6: Usage fault */
+    HANDLER SVC_Handler             /* Vector 11: SVC call */
+    HANDLER DebugMon_Handler        /* Vector 12: Debug Monitor */
+    HANDLER PendSV_Handler          /* Vector 14: Penable system service request */
 
-MemManage_Handler\
-                PROC
-                EXPORT  MemManage_Handler         [WEAK]
-                B       .
-                ENDP
-BusFault_Handler\
-                PROC
-                EXPORT  BusFault_Handler          [WEAK]
-                B       .
-                ENDP
-UsageFault_Handler\
-                PROC
-                EXPORT  UsageFault_Handler        [WEAK]
-                B       .
-                ENDP
-SVC_Handler     PROC
-                EXPORT  SVC_Handler               [WEAK]
-                B       .
-                ENDP
-DebugMon_Handler\
-                PROC
-                EXPORT  DebugMon_Handler          [WEAK]
-                B       .
-                ENDP
-PendSV_Handler  PROC
-                EXPORT  PendSV_Handler            [WEAK]
-                B       .
-                ENDP
-SysTick_Handler PROC
-                EXPORT  SysTick_Handler           [WEAK]
-                B       .
-                ENDP
-IntDefaultHandler\
-                PROC
+/************************************************************************************/
 
-                EXPORT  GPIOPortA_Handler         [WEAK]
-                EXPORT  GPIOPortB_Handler         [WEAK]
-                EXPORT  GPIOPortC_Handler         [WEAK]
-                EXPORT  GPIOPortD_Handler         [WEAK]
-                EXPORT  GPIOPortE_Handler         [WEAK]
-                EXPORT  UART0_Handler             [WEAK]
-                EXPORT  UART1_Handler             [WEAK]
-                EXPORT  SSI0_Handler              [WEAK]
-                EXPORT  I2C0_Handler              [WEAK]
-                EXPORT  PWM0Fault_Handler         [WEAK]
-                EXPORT  PWM0Generator0_Handler    [WEAK]
-                EXPORT  PWM0Generator1_Handler    [WEAK]
-                EXPORT  PWM0Generator2_Handler    [WEAK]
-                EXPORT  Quadrature0_Handler       [WEAK]
-                EXPORT  ADC0Seq0_Handler          [WEAK]
-                EXPORT  ADC0Seq1_Handler          [WEAK]
-                EXPORT  ADC0Seq2_Handler          [WEAK]
-                EXPORT  ADC0Seq3_Handler          [WEAK]
-                EXPORT  WDT_Handler               [WEAK]
-                EXPORT  Timer0A_Handler           [WEAK]
-                EXPORT  Timer0B_Handler           [WEAK]
-                EXPORT  Timer1A_Handler           [WEAK]
-                EXPORT  Timer1B_Handler           [WEAK]
-                EXPORT  Timer2A_Handler           [WEAK]
-                EXPORT  Timer2B_Handler           [WEAK]
-                EXPORT  Comp0_Handler             [WEAK]
-                EXPORT  Comp1_Handler             [WEAK]
-                EXPORT  Comp2_Handler             [WEAK]
-                EXPORT  SysCtl_Handler            [WEAK]
-                EXPORT  FlashCtl_Handler          [WEAK]
-                EXPORT  GPIOPortF_Handler         [WEAK]
-                EXPORT  GPIOPortG_Handler         [WEAK]
-                EXPORT  GPIOPortH_Handler         [WEAK]
-                EXPORT  UART2_Handler             [WEAK]
-                EXPORT  SSI1_Handler              [WEAK]
-                EXPORT  Timer3A_Handler           [WEAK]
-                EXPORT  Timer3B_Handler           [WEAK]
-                EXPORT  I2C1_Handler              [WEAK]
-                EXPORT  Quadrature1_Handler       [WEAK]
-                EXPORT  CAN0_Handler              [WEAK]
-                EXPORT  CAN1_Handler              [WEAK]
-                EXPORT  CAN2_Handler              [WEAK]
-                EXPORT  Ethernet_Handler          [WEAK]
-                EXPORT  Hibernate_Handler         [WEAK]
-                EXPORT  USB0_Handler              [WEAK]
-                EXPORT  PWM0Generator3_Handler    [WEAK]
-                EXPORT  uDMA_Handler              [WEAK]
-                EXPORT  uDMA_Error                [WEAK]
-                EXPORT  ADC1Seq0_Handler          [WEAK]
-                EXPORT  ADC1Seq1_Handler          [WEAK]
-                EXPORT  ADC1Seq2_Handler          [WEAK]
-                EXPORT  ADC1Seq3_Handler          [WEAK]
-                EXPORT  I2S0_Handler              [WEAK]
-                EXPORT  ExtBus_Handler            [WEAK]
-                EXPORT  GPIOPortJ_Handler         [WEAK]
-                EXPORT  GPIOPortK_Handler         [WEAK]
-                EXPORT  GPIOPortL_Handler         [WEAK]
-                EXPORT  SSI2_Handler              [WEAK]
-                EXPORT  SSI3_Handler              [WEAK]
-                EXPORT  UART3_Handler             [WEAK]
-                EXPORT  UART4_Handler             [WEAK]
-                EXPORT  UART5_Handler             [WEAK]
-                EXPORT  UART6_Handler             [WEAK]
-                EXPORT  UART7_Handler             [WEAK]
-                EXPORT  I2C2_Handler              [WEAK]
-                EXPORT  I2C3_Handler              [WEAK]
-                EXPORT  Timer4A_Handler           [WEAK]
-                EXPORT  Timer4B_Handler           [WEAK]
-                EXPORT  Timer5A_Handler           [WEAK]
-                EXPORT  Timer5B_Handler           [WEAK]
-                EXPORT  WideTimer0A_Handler       [WEAK]
-                EXPORT  WideTimer0B_Handler       [WEAK]
-                EXPORT  WideTimer1A_Handler       [WEAK]
-                EXPORT  WideTimer1B_Handler       [WEAK]
-                EXPORT  WideTimer2A_Handler       [WEAK]
-                EXPORT  WideTimer2B_Handler       [WEAK]
-                EXPORT  WideTimer3A_Handler       [WEAK]
-                EXPORT  WideTimer3B_Handler       [WEAK]
-                EXPORT  WideTimer4A_Handler       [WEAK]
-                EXPORT  WideTimer4B_Handler       [WEAK]
-                EXPORT  WideTimer5A_Handler       [WEAK]
-                EXPORT  WideTimer5B_Handler       [WEAK]
-                EXPORT  FPU_Handler               [WEAK]
-                EXPORT  PECI0_Handler             [WEAK]
-                EXPORT  LPC0_Handler              [WEAK]
-                EXPORT  I2C4_Handler              [WEAK]
-                EXPORT  I2C5_Handler              [WEAK]
-                EXPORT  GPIOPortM_Handler         [WEAK]
-                EXPORT  GPIOPortN_Handler         [WEAK]
-                EXPORT  Quadrature2_Handler       [WEAK]
-                EXPORT  Fan0_Handler              [WEAK]
-                EXPORT  GPIOPortP_Handler         [WEAK]
-                EXPORT  GPIOPortP1_Handler        [WEAK]
-                EXPORT  GPIOPortP2_Handler        [WEAK]
-                EXPORT  GPIOPortP3_Handler        [WEAK]
-                EXPORT  GPIOPortP4_Handler        [WEAK]
-                EXPORT  GPIOPortP5_Handler        [WEAK]
-                EXPORT  GPIOPortP6_Handler        [WEAK]
-                EXPORT  GPIOPortP7_Handler        [WEAK]
-                EXPORT  GPIOPortQ_Handler         [WEAK]
-                EXPORT  GPIOPortQ1_Handler        [WEAK]
-                EXPORT  GPIOPortQ2_Handler        [WEAK]
-                EXPORT  GPIOPortQ3_Handler        [WEAK]
-                EXPORT  GPIOPortQ4_Handler        [WEAK]
-                EXPORT  GPIOPortQ5_Handler        [WEAK]
-                EXPORT  GPIOPortQ6_Handler        [WEAK]
-                EXPORT  GPIOPortQ7_Handler        [WEAK]
-                EXPORT  GPIOPortR_Handler         [WEAK]
-                EXPORT  GPIOPortS_Handler         [WEAK]
-                EXPORT  PWM1Generator0_Handler    [WEAK]
-                EXPORT  PWM1Generator1_Handler    [WEAK]
-                EXPORT  PWM1Generator2_Handler    [WEAK]
-                EXPORT  PWM1Generator3_Handler    [WEAK]
-                EXPORT  PWM1Fault_Handler         [WEAK]
+        .weak LowLevelInit
+        .weak SystemInit
 
-GPIOPortA_Handler
-GPIOPortB_Handler
-GPIOPortC_Handler
-GPIOPortD_Handler
-GPIOPortE_Handler
-UART0_Handler
-UART1_Handler
-SSI0_Handler
-I2C0_Handler
-PWM0Fault_Handler
-PWM0Generator0_Handler
-PWM0Generator1_Handler
-PWM0Generator2_Handler
-Quadrature0_Handler
-ADC0Seq0_Handler
-ADC0Seq1_Handler
-ADC0Seq2_Handler
-ADC0Seq3_Handler
-WDT_Handler
-Timer0A_Handler
-Timer0B_Handler
-Timer1A_Handler
-Timer1B_Handler
-Timer2A_Handler
-Timer2B_Handler
-Comp0_Handler
-Comp1_Handler
-Comp2_Handler
-SysCtl_Handler
-FlashCtl_Handler
-GPIOPortF_Handler
-GPIOPortG_Handler
-GPIOPortH_Handler
-UART2_Handler
-SSI1_Handler
-Timer3A_Handler
-Timer3B_Handler
-I2C1_Handler
-Quadrature1_Handler
-CAN0_Handler
-CAN1_Handler
-CAN2_Handler
-Ethernet_Handler
-Hibernate_Handler
-USB0_Handler
-PWM0Generator3_Handler
-uDMA_Handler
-uDMA_Error
-ADC1Seq0_Handler
-ADC1Seq1_Handler
-ADC1Seq2_Handler
-ADC1Seq3_Handler
-I2S0_Handler
-ExtBus_Handler
-GPIOPortJ_Handler
-GPIOPortK_Handler
-GPIOPortL_Handler
-SSI2_Handler
-SSI3_Handler
-UART3_Handler
-UART4_Handler
-UART5_Handler
-UART6_Handler
-UART7_Handler
-I2C2_Handler
-I2C3_Handler
-Timer4A_Handler
-Timer4B_Handler
-Timer5A_Handler
-Timer5B_Handler
-WideTimer0A_Handler
-WideTimer0B_Handler
-WideTimer1A_Handler
-WideTimer1B_Handler
-WideTimer2A_Handler
-WideTimer2B_Handler
-WideTimer3A_Handler
-WideTimer3B_Handler
-WideTimer4A_Handler
-WideTimer4B_Handler
-WideTimer5A_Handler
-WideTimer5B_Handler
-FPU_Handler
-PECI0_Handler
-LPC0_Handler
-I2C4_Handler
-I2C5_Handler
-GPIOPortM_Handler
-GPIOPortN_Handler
-Quadrature2_Handler
-Fan0_Handler
-GPIOPortP_Handler
-GPIOPortP1_Handler
-GPIOPortP2_Handler
-GPIOPortP3_Handler
-GPIOPortP4_Handler
-GPIOPortP5_Handler
-GPIOPortP6_Handler
-GPIOPortP7_Handler
-GPIOPortQ_Handler
-GPIOPortQ1_Handler
-GPIOPortQ2_Handler
-GPIOPortQ3_Handler
-GPIOPortQ4_Handler
-GPIOPortQ5_Handler
-GPIOPortQ6_Handler
-GPIOPortQ7_Handler
-GPIOPortR_Handler
-GPIOPortS_Handler
-PWM1Generator0_Handler
-PWM1Generator1_Handler
-PWM1Generator2_Handler
-PWM1Generator3_Handler
-PWM1Fault_Handler
+        .macro   FUNCTION name
+        .func    \name,\name
+        .type    \name,%function
+        .thumb_func
+        .align
+\name\():
+        .endm
 
-                B       .
+        .macro  ENDFUNC name
+        .size   \name, . - \name
+        .pool
+        .endfunc
+        .endm
 
-                ENDP
+    FUNCTION    Reset_Handler
 
-;******************************************************************************
-;
-; Make sure the end of this section is aligned.
-;
-;******************************************************************************
-        ALIGN
+        ldr                 r0,=LowLevelInit
+        cmp                 r0,#0
+        it                  ne
+        blxne               r0
 
-;******************************************************************************
-;
-; Some code in the normal code section for initializing the heap and stack.
-;
-;******************************************************************************
-        AREA    |.text|, CODE, READONLY
+        ldr                 r0,=SystemInit
+        cmp                 r0,#0
+        it                  ne
+        blxne               r0
 
-;******************************************************************************
-;
-; Useful functions.
-;
-;******************************************************************************
-        EXPORT  DisableInterrupts
-        EXPORT  EnableInterrupts
-        EXPORT  StartCritical
-        EXPORT  EndCritical
-        EXPORT  WaitForInterrupt
+        ldr                 r1,=_etext
+        ldr                 r2,=_sdata
+        ldr                 r3,=_edata
+        bl                  copy
 
-;*********** DisableInterrupts ***************
-; disable interrupts
-; inputs:  none
-; outputs: none
-DisableInterrupts
-        CPSID  I
-        BX     LR
+        movs                r0,#0
+        ldr                 r1,=_sbss
+        ldr                 r2,=_ebss
 
-;*********** EnableInterrupts ***************
-; disable interrupts
-; inputs:  none
-; outputs: none
-EnableInterrupts
-        CPSIE  I
-        BX     LR
+zero:   cmp                 r1,r2
+        it                  cc
+        strlo               r0,[r1],#4
+        blo                 zero
 
-;*********** StartCritical ************************
-; make a copy of previous I bit, disable interrupts
-; inputs:  none
-; outputs: previous I bit
-StartCritical
-        MRS    R0, PRIMASK  ; save old status
-        CPSID  I            ; mask all (except faults)
-        BX     LR
+        ldr                 r0,=main
+        blx                 r0
+        b                   Reserved_Handler
 
-;*********** EndCritical ************************
-; using the copy of previous I bit, restore I bit to previous value
-; inputs:  previous I bit
-; outputs: none
-EndCritical
-        MSR    PRIMASK, R0
-        BX     LR
+copy:
+        cmp                 r2,r3                       /* check if we've reached the end */
+        it                  cc
+        ldrlo               r0,[r1],#4                  /* if end not reached, get word and advance source pointer */
+        it                  cc
+        strlo               r0,[r2],#4                  /* if end not reached, store word and advance destination pointer */
+        blo                 copy                        /* if end not reached, branch back to loop */
+        bx                  lr                          /* return to caller */
 
-;*********** WaitForInterrupt ************************
-; go to low power mode while waiting for the next interrupt
-; inputs:  none
-; outputs: none
-WaitForInterrupt
-        WFI
-        BX     LR
+    ENDFUNC    Reset_Handler
 
-;******************************************************************************
-;
-; The function expected of the C library startup code for defining the stack
-; and heap memory locations.  For the C library version of the startup code,
-; provide this function so that the C library initialization code can find out
-; the location of the stack and heap.
-;
-;******************************************************************************
-    IF :DEF: __MICROLIB
-        EXPORT  __initial_sp
-        EXPORT  __heap_base
-        EXPORT  __heap_limit
-    ELSE
-        IMPORT  __use_two_region_memory
-        EXPORT  __user_initial_stackheap
-__user_initial_stackheap
-        LDR     R0, =HeapMem
-        LDR     R1, =(StackMem + Stack)
-        LDR     R2, =(HeapMem + Heap)
-        LDR     R3, =StackMem
-        BX      LR
-    ENDIF
+FUNCTION enableInterrupts
+.globl enableInterrupts
+.type enableInterrupts, function
+        cpsie i
+        blx   lr
+ENDFUNC    enableInterrupts
 
-;******************************************************************************
-;
-; Make sure the end of this section is aligned.
-;
-;******************************************************************************
-        ALIGN
+FUNCTION disableInterrupts
+.globl disableInterrupts
+.type disableInterrupts, function
+        cpsid i
+        blx lr
+ENDFUNC    disableInterrupts
 
-;******************************************************************************
-;
-; Tell the assembler that we're done.
-;
-;******************************************************************************
-        END
+/************************************************************************************/
+
+.macro  INTHANDLER, INT
+.weakref \INT, Reserved_Handler
+.endm
+
+    .text
+    .type   inthandlers, function
+    .thumb_func
+
+inthandlers:
+    INTHANDLER SysTick_Handler
+    INTHANDLER GPIOPortA_Handler
+    INTHANDLER GPIOPortB_Handler
+    INTHANDLER GPIOPortC_Handler
+    INTHANDLER GPIOPortD_Handler
+    INTHANDLER GPIOPortE_Handler
+    INTHANDLER UART0_Handler
+    INTHANDLER UART1_Handler
+    INTHANDLER SSI0_Handler
+    INTHANDLER I2C0_Handler
+    INTHANDLER PWM0Fault_Handler
+    INTHANDLER PWM0Generator0_Handler
+    INTHANDLER PWM0Generator1_Handler
+    INTHANDLER PWM0Generator2_Handler
+    INTHANDLER Quadrature0_Handler
+    INTHANDLER ADC0Seq0_Handler
+    INTHANDLER ADC0Seq1_Handler
+    INTHANDLER ADC0Seq2_Handler
+    INTHANDLER ADC0Seq3_Handler
+    INTHANDLER WDT_Handler
+    INTHANDLER Timer0A_Handler
+    INTHANDLER Timer0B_Handler
+    INTHANDLER Timer1A_Handler
+    INTHANDLER Timer1B_Handler
+    INTHANDLER Timer2A_Handler
+    INTHANDLER Timer2B_Handler
+    INTHANDLER Comp0_Handler
+    INTHANDLER Comp1_Handler
+    INTHANDLER Comp2_Handler
+    INTHANDLER SysCtl_Handler
+    INTHANDLER FlashCtl_Handler
+    INTHANDLER GPIOPortF_Handler
+    INTHANDLER GPIOPortG_Handler
+    INTHANDLER GPIOPortH_Handler
+    INTHANDLER UART2_Handler
+    INTHANDLER SSI1_Handler
+    INTHANDLER Timer3A_Handler
+    INTHANDLER Timer3B_Handler
+    INTHANDLER I2C1_Handler
+    INTHANDLER Quadrature1_Handler
+    INTHANDLER CAN0_Handler
+    INTHANDLER CAN1_Handler
+    INTHANDLER CAN2_Handler
+    INTHANDLER Ethernet_Handler
+    INTHANDLER Hibernate_Handler
+    INTHANDLER USB0_Handler
+    INTHANDLER PWM0Generator3_Handler
+    INTHANDLER uDMA_Handler
+    INTHANDLER uDMA_Error
+    INTHANDLER ADC1Seq0_Handler
+    INTHANDLER ADC1Seq1_Handler
+    INTHANDLER ADC1Seq2_Handler
+    INTHANDLER ADC1Seq3_Handler
+    INTHANDLER I2S0_Handler
+    INTHANDLER ExtBus_Handler
+    INTHANDLER GPIOPortJ_Handler
+    INTHANDLER GPIOPortK_Handler
+    INTHANDLER GPIOPortL_Handler
+    INTHANDLER SSI2_Handler
+    INTHANDLER SSI3_Handler
+    INTHANDLER UART3_Handler
+    INTHANDLER UART4_Handler
+    INTHANDLER UART5_Handler
+    INTHANDLER UART6_Handler
+    INTHANDLER UART7_Handler
+    INTHANDLER I2C2_Handler
+    INTHANDLER I2C3_Handler
+    INTHANDLER Timer4A_Handler
+    INTHANDLER Timer4B_Handler
+    INTHANDLER Timer5A_Handler
+    INTHANDLER Timer5B_Handler
+    INTHANDLER WideTimer0A_Handler
+    INTHANDLER WideTimer0B_Handler
+    INTHANDLER WideTimer1A_Handler
+    INTHANDLER WideTimer1B_Handler
+    INTHANDLER WideTimer2A_Handler
+    INTHANDLER WideTimer2B_Handler
+    INTHANDLER WideTimer3A_Handler
+    INTHANDLER WideTimer3B_Handler
+    INTHANDLER WideTimer4A_Handler
+    INTHANDLER WideTimer4B_Handler
+    INTHANDLER WideTimer5A_Handler
+    INTHANDLER WideTimer5B_Handler
+    INTHANDLER FPU_Handler
+    INTHANDLER PECI0_Handler
+    INTHANDLER LPC0_Handler
+    INTHANDLER I2C4_Handler
+    INTHANDLER I2C5_Handler
+    INTHANDLER GPIOPortM_Handler
+    INTHANDLER GPIOPortN_Handler
+    INTHANDLER Quadrature2_Handler
+    INTHANDLER Fan0_Handler
+    INTHANDLER GPIOPortP_Handler
+    INTHANDLER GPIOPortP1_Handler
+    INTHANDLER GPIOPortP2_Handler
+    INTHANDLER GPIOPortP3_Handler
+    INTHANDLER GPIOPortP4_Handler
+    INTHANDLER GPIOPortP5_Handler
+    INTHANDLER GPIOPortP6_Handler
+    INTHANDLER GPIOPortP7_Handler
+    INTHANDLER GPIOPortQ_Handler
+    INTHANDLER GPIOPortQ1_Handler
+    INTHANDLER GPIOPortQ2_Handler
+    INTHANDLER GPIOPortQ3_Handler
+    INTHANDLER GPIOPortQ4_Handler
+    INTHANDLER GPIOPortQ5_Handler
+    INTHANDLER GPIOPortQ6_Handler
+    INTHANDLER GPIOPortQ7_Handler
+    INTHANDLER GPIOPortR_Handler
+    INTHANDLER GPIOPortS_Handler
+    INTHANDLER PWM1Generator0_Handler
+    INTHANDLER PWM1Generator1_Handler
+    INTHANDLER PWM1Generator2_Handler
+    INTHANDLER PWM1Generator3_Handler
+    INTHANDLER PWM1Fault_Handler
+/************************************************************************************/

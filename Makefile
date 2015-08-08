@@ -9,7 +9,7 @@ LDFLAGS=
 
 CSRC= main.c \
 
-ASRC = tm4c123gh6pm.s \
+ASRC = startup.s \
 
 COBJ=$(CSRC:.c=.o)
 AOBJ=$(ASRC:.s=.o)
