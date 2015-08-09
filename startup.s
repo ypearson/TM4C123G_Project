@@ -34,22 +34,22 @@
 
 _vectors:
 
-    .long     (_ebss + 4096)              /* Top of Stack */
-    .long     Reset_Handler               /* Reset Handler */
-    .long     NMI_Handler                 /* NMI Handler */
-    .long     HardFault_Handler           /* Hard Fault Handler */
-    .long     MemManage_Handler           /* MPU Fault Handler */
-    .long     BusFault_Handler            /* Bus Fault Handler */
-    .long     UsageFault_Handler          /* Usage Fault Handler */
-    .long     0                           /* Reserved */
-    .long     0                           /* Reserved */
-    .long     0                           /* Reserved */
-    .long     0                           /* Reserved */
-    .long     SVC_Handler                 /* SVCall Handler */
-    .long     DebugMon_Handler            /* Debug Monitor Handler */
-    .long     0                           /* Reserved */
-    .long     PendSV_Handler              /* PendSV Handler */
-    .long     SysTick_Handler             /* SysTick Handler */
+    .long     (_ebss + 4096)              /*0x00 Top of Stack */
+    .long     Reset_Handler               /*0x04 Reset Handler */
+    .long     NMI_Handler                 /*0x08 NMI Handler */
+    .long     HardFault_Handler           /*0x0C Hard Fault Handler */
+    .long     MemManage_Handler           /*0x10 MPU Fault Handler */
+    .long     BusFault_Handler            /*0x14 Bus Fault Handler */
+    .long     UsageFault_Handler          /*0x18 Usage Fault Handler */
+    .long     0                           /*0x1C Reserved */
+    .long     0                           /*0x20 Reserved */
+    .long     0                           /*0x24 Reserved */
+    .long     0                           /*0x28 Reserved */
+    .long     SVC_Handler                 /*0x2C SVCall Handler */
+    .long     DebugMon_Handler            /*0x30 Debug Monitor Handler */
+    .long     0                           /*0x34 Reserved */
+    .long     PendSV_Handler              /*0x38 PendSV Handler */
+    .long     SysTick_Handler             /*0x3C SysTick Handler */
     .long     GPIOPortA_Handler           /* GPIO Port A */
     .long     GPIOPortB_Handler           /* GPIO Port B */
     .long     GPIOPortC_Handler           /* GPIO Port C */
@@ -221,7 +221,7 @@ handlers:
         .func    \name,\name
         .type    \name,%function
         .thumb_func
-        .align
+        .align 2
 \name\():
         .endm
 
@@ -289,7 +289,8 @@ ENDFUNC    disableInterrupts
 /************************************************************************************/
 
 .macro  INTHANDLER, INT
-.weakref \INT, Reserved_Handler
+.weak \INT
+.set \INT, Reserved_Handler
 .endm
 
     .text

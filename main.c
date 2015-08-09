@@ -4,7 +4,19 @@
 unsigned int glob1;
 unsigned int glob2 = 5;
 unsigned int glob22 = 909;
-const glob3 = 7;
+int glob3 = 7;
+
+void enableInterrupts(void);
+
+void SysTick_Handler(void)
+{
+    int i, j = 0;
+
+    for(i=0; i < 3; i++)
+    {
+        j++;
+    }
+}
 
 void systick_init(unsigned long period)
 {
@@ -41,13 +53,4 @@ int main(void)
   while(1);
 }
 
-void SysTick_Handler(void)
-{
-    int i, j = 0;
-
-    for(i=0; i < 3; i++)
-    {
-        j++;
-    }
-}
 

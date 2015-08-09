@@ -3,7 +3,7 @@ LD=/home/ypearson/arm/arm-unknown-eabi/bin/arm-unknown-eabi-ld
 AS=/home/ypearson/arm/arm-unknown-eabi/bin/arm-unknown-eabi-as
 
 TARGET=run
-CFLAGS= -c -g -nostartfiles -mcpu=cortex-m4 -mthumb
+CFLAGS= -c -g -Wall -nostartfiles -mcpu=cortex-m4 -mthumb
 AFLAGS= -c -g -mcpu=cortex-m4 -mthumb
 LDFLAGS=
 
