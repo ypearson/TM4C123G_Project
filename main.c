@@ -1,10 +1,5 @@
 #include "tm4c123gh6pm.h"
-
-
-unsigned int glob1;
-unsigned int glob2 = 5;
-unsigned int glob22 = 909;
-int glob3 = 7;
+#include "pll.h"
 
 void enableInterrupts(void);
 
@@ -20,10 +15,6 @@ void SysTick_Handler(void)
 
 void systick_init(unsigned long period)
 {
-  /*
-  1. Program the value in the STRELOAD register.
-  2. Clear the STCURRENT register by writing to it with any value.
-  3. Configure the STCTRL register for the required operation. */
   NVIC_ST_RELOAD_R = 0xFFFFF & period;
   NVIC_ST_CURRENT_R = 0;
 }
@@ -40,14 +31,10 @@ void systick_disable_int(void)
 
 int main(void)
 {
-  unsigned int i = glob2;
-  glob2++;
-  glob2++;
-  glob1 = 6;
+  pll_init();
   systick_init(1000000);
   systick_enable_int();
   enableInterrupts();
-
   //disableInterrupts();
 
   while(1);

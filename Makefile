@@ -1,6 +1,7 @@
-CC=/home/ypearson/arm/arm-unknown-eabi/bin/arm-unknown-eabi-gcc
-LD=/home/ypearson/arm/arm-unknown-eabi/bin/arm-unknown-eabi-ld
-AS=/home/ypearson/arm/arm-unknown-eabi/bin/arm-unknown-eabi-as
+CROSS=arm-unknown-eabi-
+CC=${CROSS}gcc
+LD=${CROSS}ld
+AS=${CROSS}as
 
 TARGET=run
 CFLAGS= -c -g -Wall -nostartfiles -mcpu=cortex-m4 -mthumb
@@ -8,6 +9,7 @@ AFLAGS= -c -g -mcpu=cortex-m4 -mthumb
 LDFLAGS=
 
 CSRC= main.c \
+	pll.c
 
 ASRC = startup.s \
 
