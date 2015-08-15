@@ -10,7 +10,10 @@ LDFLAGS=
 
 CSRC= main.c \
 	pll.c \
-	systick.c
+	systick.c \
+	uart.c \
+	adc.c \
+	ascii_helpers.c
 
 ASRC = startup.s \
 
