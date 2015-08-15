@@ -3,13 +3,14 @@ CC=${CROSS}gcc
 LD=${CROSS}ld
 AS=${CROSS}as
 
-TARGET=run
+TARGET=code.elf
 CFLAGS= -c -g -Wall -nostartfiles -mcpu=cortex-m4 -mthumb
 AFLAGS= -c -g -mcpu=cortex-m4 -mthumb
 LDFLAGS=
 
 CSRC= main.c \
-	pll.c
+	pll.c \
+	systick.c
 
 ASRC = startup.s \
 

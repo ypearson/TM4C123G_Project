@@ -31,7 +31,8 @@
 // #define SYSCTL_RCC2_OSCSRC2_MO  0x00000000  // MOSC
 
 // configure the system to get its clock from the PLL
-void pll_init(void){
+void pll_init(void)
+{
   // 0) configure the system to use RCC2 for advanced features
   //    such as 400 MHz PLL and non-integer System Clock Divisor
   SYSCTL_RCC2_R |= SYSCTL_RCC2_USERCC2;
