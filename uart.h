@@ -4,6 +4,6 @@
 #include "ctypes.h"
 
 void uart0_init(void);
-void putchar(uint8_t data);
+void putbyte(uint8_t data);
 
 #endif

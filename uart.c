@@ -18,7 +18,7 @@ void uart0_init(void)
   GPIO_PORTA_AMSEL_R &= ~0x03;          // disable analog functionality on PA1,PA0
 }
 
-void putchar(uint8_t data)
+void putbyte(uint8_t data)
 {
   while((UART0_FR_R&UART_FR_TXFF) != 0);
   UART0_DR_R = data;

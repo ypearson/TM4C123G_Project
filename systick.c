@@ -1,5 +1,6 @@
 #include "tm4c123gh6pm.h"
 #include "systick.h"
+#include "adc.h"
 
 void systick_init(unsigned long period)
 {
