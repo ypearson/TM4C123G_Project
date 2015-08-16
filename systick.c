@@ -19,10 +19,6 @@ void systick_disable_int(void)
 
 void SysTick_Handler(void)
 {
-    int i, j = 0;
-
-    for(i=0; i < 3; i++)
-    {
-        j++;
-    }
+    uint32_t sample = adc0_get_sample();
+    sample;
 }
