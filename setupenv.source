@@ -1,1 +1,1 @@
-export PATH=$HOME/arm/arm-unknown-eabi/bin:openocd:$PATH
+export PATH=$HOME/arm/arm-unknown-eabi/bin:openocd/bin:$PATH
