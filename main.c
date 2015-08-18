@@ -4,8 +4,11 @@
 #include "systick.h"
 #include "adc.h"
 #include "uart.h"
+#include "i2c.h"
 
 void enableInterrupts(void);
+
+#define I2C_SLAVE_ADDRESS (0x3b)
 
 int main(void)
 {
@@ -20,7 +23,10 @@ int main(void)
     uart0_enable_int();
 
     enableInterrupts();
-    //disableInterrupts();
+
+    i2c0_master_init();
+    i2c0_master_rxtx_byte_polling(0x66, I2C_SLAVE_ADDRESS, I2C_TX);
+    i2c0_master_rxtx_byte_polling(0x66, I2C_SLAVE_ADDRESS, I2C_RX);
 
     while(1);
 

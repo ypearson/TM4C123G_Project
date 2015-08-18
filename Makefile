@@ -13,7 +13,8 @@ CSRC= main.c \
 	systick.c \
 	uart.c \
 	adc.c \
-	ascii_helpers.c
+	ascii_helpers.c \
+	i2c.c
 
 ASRC = startup.s \
 
