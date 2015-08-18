@@ -1,4 +1,4 @@
-CROSS=arm-unknown-eabi-
+CROSS=arm-none-eabi-
 CC=${CROSS}gcc
 LD=${CROSS}ld
 AS=${CROSS}as
