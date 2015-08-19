@@ -1,8 +1,6 @@
 #include "tm4c123gh6pm.h"
 #include "i2c.h"
 
-
-
 void i2c0_master_init(void)
 {
     volatile uint32_t delay;
@@ -17,15 +15,26 @@ void i2c0_master_init(void)
     I2C0_MTPR_R = ( SYS_FREQ_HZ ) / ( 20u * SCL_FREQ_HZ ) - 1u;
 }
 
-void i2c0_master_rxtx_byte_polling(uint8_t byte, uint8_t slave_address, uint8_t mode)
+uint8_t i2c0_master_rxtx_byte_polling(uint8_t *byte, uint8_t slave_address, uint8_t mode)
 {
-    uint32_t msa = ( slave_address << 1 ) | ( I2C_RXTX_MSK & mode );
-    I2C0_MSA_R = msa;
-    I2C0_MDR_R = byte;
+    uint8_t result;
+
+    while( I2C0_MCS_R & I2C_MCS_BUSY );
+    I2C0_MSA_R = ( slave_address << 1 ) | ( I2C_RXTX_MSK & mode );
+    if(!mode)
+    {
+        I2C0_MDR_R = *byte;
+    }
     I2C0_MCS_R |= ( I2C_MCS_START | I2C_MCS_STOP | I2C_MCS_RUN);
     while( I2C0_MCS_R & I2C_MCS_BUSY );
-}
 
+    result = (uint8_t) (I2C0_MCS_R & I2C_MCS_ERROR);
+    if(!result && mode)
+    {
+        *byte = I2C0_MDR_R;
+    }
+    return result;
+}
 
 void I2C0_Handler(void)
 {

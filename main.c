@@ -12,6 +12,9 @@ void enableInterrupts(void);
 
 int main(void)
 {
+    uint8_t ret;
+    uint8_t byte = 0x66;
+
     pll_init();
 
     adc0_init();
@@ -25,8 +28,9 @@ int main(void)
     enableInterrupts();
 
     i2c0_master_init();
-    i2c0_master_rxtx_byte_polling(0x66, I2C_SLAVE_ADDRESS, I2C_TX);
-    i2c0_master_rxtx_byte_polling(0x66, I2C_SLAVE_ADDRESS, I2C_RX);
+
+    ret = i2c0_master_rxtx_byte_polling(&byte, I2C_SLAVE_ADDRESS, I2C_TX);
+    ret = i2c0_master_rxtx_byte_polling(&byte, I2C_SLAVE_ADDRESS, I2C_RX);
 
     while(1);
 

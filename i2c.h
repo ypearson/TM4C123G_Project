@@ -20,7 +20,7 @@
 #define I2C_TX       (0x0u)
 
 void i2c0_master_init(void);
-void i2c0_master_rxtx_byte_polling(uint8_t byte, uint8_t slave_address, uint8_t mode);
+uint8_t i2c0_master_rxtx_byte_polling(uint8_t *byte, uint8_t slave_address, uint8_t mode);
 
 
 #endif
