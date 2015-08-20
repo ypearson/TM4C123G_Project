@@ -10,11 +10,8 @@
 
 void enableInterrupts(void);
 
-
-
 int main(void)
 {
-    uint8_t ret;
     uint8_t byte = 0x66;
 
     pll_init();

@@ -22,5 +22,5 @@ void systick_disable_int(void)
 void SysTick_Handler(void)
 {
   uint8_t byte = 0x66;
-  i2c0_master_rxtx_byte_polling(&byte, I2C_SLAVE_ADDRESS, I2C_TX);
+  i2c0_master_rxtx_byte_polling(&byte, I2C_SLAVE_ADDRESS, I2C_RX);
 }

@@ -50,11 +50,9 @@ void i2c0_slave_init(void)
     GPIO_PORTB_AFSEL_R |= ( I2C0SCL|I2C0SDA );
     GPIO_PORTB_DEN_R   |= ( I2C0SCL|I2C0SDA );
     GPIO_PORTB_ODR_R   |= ( I2C0SDA );
-    I2C0_MCR_R = I2C_MCR_SFE;
-    I2C0_SOAR_R = I2C_SLAVE_ADDRESS;
+    I2C0_MCR_R |= I2C_MCR_SFE;
     I2C0_SCSR_R = I2C_SCSR_DA;
-    //I2C0_SDR_R = 0;
-    //delay = I2C0_SDR_R;
+    I2C0_SOAR_R = I2C_SLAVE_ADDRESS;
 }
 
 uint8_t i2c0_slave_rxtx_byte_polling(uint8_t *byte, uint8_t blocking)
