@@ -1,6 +1,7 @@
 #include "tm4c123gh6pm.h"
 #include "systick.h"
 #include "adc.h"
+#include "i2c.h"
 
 void systick_init(unsigned long period)
 {
@@ -20,11 +21,6 @@ void systick_disable_int(void)
 
 void SysTick_Handler(void)
 {
-    volatile uint32_t sample;// = adc0_get_sample();
-    
-    sample++;
-    sample++;
-    sample++;
-
-
+  uint8_t byte = 0x66;
+  i2c0_master_rxtx_byte_polling(&byte, I2C_SLAVE_ADDRESS, I2C_TX);
 }
