@@ -21,9 +21,14 @@
 
 #define I2C_SLAVE_ADDRESS (0x3b)
 
-void i2c0_master_init(void);
-uint8_t i2c0_master_rxtx_byte_polling(uint8_t *byte, uint8_t slave_address, uint8_t mode);
-uint8_t i2c0_master_rx_byte_polling(uint8_t slave_address);
+// Master
+void    i2c0_master_init(void);
+uint8_t i2c0_master_rxtx_byte_polling (uint8_t *byte, uint8_t slave_address, uint8_t mode);
+uint8_t i2c0_master_rx_byte_polling   (uint8_t slave_address);
+uint8_t i2c0_master_tx_byte_polling   (uint8_t *byte, uint8_t slave_address);
+uint8_t i2c0_master_tx_byte_polling   (uint8_t *byte, uint8_t slave_address);
+
+// Slave
 
 void i2c0_slave_init(void);
 uint8_t i2c0_slave_rxtx_byte_polling(uint8_t *byte, uint8_t blocking);

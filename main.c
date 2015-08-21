@@ -6,7 +6,7 @@
 #include "uart.h"
 #include "i2c.h"
 
-#define SLAVE_MODE 1
+#define SLAVE_MODE 0
 
 void enableInterrupts(void);
 
@@ -19,7 +19,7 @@ int main(void)
     if(!SLAVE_MODE)
     {
         i2c0_master_init();
-        systick_init(200000);
+        systick_init(20000);
         systick_enable_int();
         enableInterrupts();
     }
