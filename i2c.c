@@ -70,6 +70,31 @@ uint8_t i2c0_master_rx_bytes_polling(uint8_t slave_address, uint8_t len)
     return tmp;
 }
 
+uint8_t i2c0_master_tx_bytes_polling(uint8_t slave_address, uint8_t len)
+{
+    uint8_t i = 0;
+    uint8_t tmp = 0x96;
+
+    while( I2C0_MCS_R & I2C_MCS_BUSY );
+    I2C0_MSA_R = ( ( slave_address << 1 ) | I2C_TX  );
+    I2C0_MDR_R = tmp;
+    I2C0_MCS_R = ( I2C_MCS_START | I2C_MCS_RUN );
+    while( I2C0_MCS_R & I2C_MCS_BUSY );
+
+    for(i = 0; i < len - 2; i++)
+    {
+        I2C0_MDR_R = tmp;
+        I2C0_MCS_R = ( I2C_MCS_RUN );
+        while( I2C0_MCS_R & I2C_MCS_BUSY );
+    }
+
+    I2C0_MDR_R = tmp;
+    I2C0_MCS_R = ( I2C_MCS_STOP | I2C_MCS_RUN );
+    while( I2C0_MCS_R & I2C_MCS_BUSY );
+
+    return tmp;
+}
+
 
 void i2c0_slave_init(void)
 {
@@ -81,9 +106,9 @@ void i2c0_slave_init(void)
     GPIO_PORTB_AFSEL_R |= ( I2C0SCL|I2C0SDA );
     GPIO_PORTB_DEN_R   |= ( I2C0SCL|I2C0SDA );
     GPIO_PORTB_ODR_R   |= ( I2C0SDA );
-    I2C0_MCR_R  |= I2C_MCR_SFE;
-    I2C0_SCSR_R |= I2C_SCSR_DA;
-    I2C0_SOAR_R |= I2C_SLAVE_ADDRESS;
+    I2C0_MCR_R  = I2C_MCR_SFE;
+    I2C0_SCSR_R = I2C_SCSR_DA;
+    I2C0_SOAR_R = I2C_SLAVE_ADDRESS;
 }
 
 uint8_t i2c0_slave_rxtx_byte_polling(uint8_t *byte, uint8_t blocking)
@@ -94,9 +119,15 @@ uint8_t i2c0_slave_rxtx_byte_polling(uint8_t *byte, uint8_t blocking)
     {
         if(I2C0_SCSR_R & I2C_SCSR_RREQ)
         {
-            while( !(I2C0_SCSR_R & I2C_SCSR_FBR) );
-            *byte = I2C0_SDR_R;
-
+            if(I2C0_SCSR_R & I2C_SCSR_FBR)
+            {
+                result = I2C0_SDR_R;
+                *byte = 1;
+            }
+            else if(*byte == 1)
+            {
+                result = I2C0_SDR_R;   
+            }
         }
         else if(I2C0_SCSR_R & I2C_SCSR_TREQ)
         {

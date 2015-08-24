@@ -6,13 +6,13 @@
 #include "uart.h"
 #include "i2c.h"
 
-#define SLAVE_MODE 0
+#define SLAVE_MODE 1
 
 void enableInterrupts(void);
 
 int main(void)
 {
-    uint8_t byte = 0x66;
+    uint8_t byte = 0;
 
     pll_init();
 
