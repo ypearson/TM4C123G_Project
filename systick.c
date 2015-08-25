@@ -25,15 +25,6 @@ void systick_disable_int(void)
 void SysTick_Handler(void)
 {
   uint8_t byte = 0xab;
-  if(!toggle)
-  {
-	i2c0_master_tx_byte_polling(0x27, &byte);
-	toggle = 1;
-  }
-  else
-  {
-  	i2c0_master_rx_bytes_polling(0x27, 4);
-  	toggle = 0;
-  }
+  
 
 }

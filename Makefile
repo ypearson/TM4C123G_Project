@@ -16,6 +16,8 @@ CSRC= main.c \
 	ascii_helpers.c \
     i2c.c \
     gpio.c \
+    hih6130.c \
+
 
 ASRC = startup.s \
 

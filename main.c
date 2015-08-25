@@ -6,6 +6,7 @@
 #include "uart.h"
 #include "i2c.h"
 #include "gpio.h"
+#include "hih6130.h"
 
 void enableInterrupts(void);
 
@@ -18,10 +19,9 @@ int main(void)
 
     if(!I2C_SLAVE_MODE)
     {
-        i2c0_master_init();
-        i2c0_enable_int();
         systick_init(200000);
         systick_enable_int();
+        hih6130_sensor_init0();
         enableInterrupts();
     }
     else
