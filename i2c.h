@@ -27,6 +27,8 @@ uint8_t i2c0_master_rx_byte_polling (uint8_t slave_address);
 uint8_t i2c0_master_tx_byte_polling (uint8_t *byte, uint8_t slave_address);
 uint8_t i2c0_master_rx_bytes_polling(uint8_t slave_address, uint8_t len);
 uint8_t i2c0_master_tx_bytes_polling(uint8_t slave_address, uint8_t len);
+uint8_t i2c0_master_tx_to_rx_bytes_polling(uint8_t slave_address, uint8_t len);
+void    i2c0_enable_int(void);
 
 // Slave
 
@@ -34,4 +36,6 @@ void i2c0_slave_init(void);
 uint8_t i2c0_slave_rxtx_byte_polling(uint8_t *byte, uint8_t blocking);
 
 
+
+#define SLAVE_MODE 0
 #endif
