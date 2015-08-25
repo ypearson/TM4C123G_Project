@@ -22,9 +22,11 @@
 #define I2C_SLAVE_ADDRESS (0x3b)
 
 // Master
+#define i2c0_master_busy_wait() while(I2C0_MCS_R & I2C_MCS_BUSY)
+
 void    i2c0_master_init(void);
 uint8_t i2c0_master_rx_byte_polling (uint8_t slave_address);
-uint8_t i2c0_master_tx_byte_polling (uint8_t *byte, uint8_t slave_address);
+uint8_t i2c0_master_tx_byte_polling (uint8_t slave_address, uint8_t *byte);
 uint8_t i2c0_master_rx_bytes_polling(uint8_t slave_address, uint8_t len);
 uint8_t i2c0_master_tx_bytes_polling(uint8_t slave_address, uint8_t len);
 uint8_t i2c0_master_tx_to_rx_bytes_polling(uint8_t slave_address, uint8_t len);
@@ -32,10 +34,10 @@ void    i2c0_enable_int(void);
 
 // Slave
 
-void i2c0_slave_init(void);
+void    i2c0_slave_init(void);
 uint8_t i2c0_slave_rxtx_byte_polling(uint8_t *byte, uint8_t blocking);
 
 
 
-#define SLAVE_MODE 0
+#define I2C_SLAVE_MODE 0
 #endif

@@ -2,6 +2,9 @@
 #include "systick.h"
 #include "adc.h"
 #include "i2c.h"
+#include "gpio.h"
+
+static uint8_t toggle = 0;
 
 void systick_init(unsigned long period)
 {
@@ -22,8 +25,15 @@ void systick_disable_int(void)
 void SysTick_Handler(void)
 {
   uint8_t byte = 0xab;
-  i2c0_master_tx_to_rx_bytes_polling(I2C_SLAVE_ADDRESS, 10);
-  //i2c0_master_tx_bytes_polling(I2C_SLAVE_ADDRESS, 10);
-  //i2c0_master_rx_byte_polling(I2C_SLAVE_ADDRESS);
-  //i2c0_master_tx_byte_polling(&byte, I2C_SLAVE_ADDRESS);
+  if(!toggle)
+  {
+	i2c0_master_tx_byte_polling(0x27, &byte);
+	toggle = 1;
+  }
+  else
+  {
+  	i2c0_master_rx_bytes_polling(0x27, 4);
+  	toggle = 0;
+  }
+
 }

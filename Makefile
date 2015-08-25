@@ -14,7 +14,8 @@ CSRC= main.c \
 	uart.c \
 	adc.c \
 	ascii_helpers.c \
-        i2c.c
+    i2c.c \
+    gpio.c \
 
 ASRC = startup.s \
 

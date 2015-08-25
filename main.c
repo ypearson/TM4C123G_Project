@@ -5,8 +5,7 @@
 #include "adc.h"
 #include "uart.h"
 #include "i2c.h"
-
-#define SLAVE_MODE 0
+#include "gpio.h"
 
 void enableInterrupts(void);
 
@@ -15,12 +14,13 @@ int main(void)
     uint8_t byte = 0;
 
     pll_init();
+    gpio_porta_init();
 
-    if(!SLAVE_MODE)
+    if(!I2C_SLAVE_MODE)
     {
         i2c0_master_init();
         i2c0_enable_int();
-        systick_init(20000);
+        systick_init(200000);
         systick_enable_int();
         enableInterrupts();
     }
