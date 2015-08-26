@@ -5,7 +5,7 @@
 void i2c_device_init(i2c_device_t *dev, uint8_t num)
 {
     uint8_t i = 0;
-    
+
     dev->num     = num;
     dev->i2cb.sz = I2C_BUF_SZ;
 
@@ -16,7 +16,7 @@ void i2c_device_init(i2c_device_t *dev, uint8_t num)
 
     dev->init = i2c0_master_init;
     dev->read = i2c0_master_rx_bytes_polling;
-    dev->write = i2c0_master_tx_byte_polling;
+    dev->write = i2c0_master_tx_bytes_polling;
 }
 
 void i2c0_master_init(void)
@@ -93,10 +93,15 @@ uint8_t i2c0_master_rx_bytes_polling(uint8_t slave_address, i2c_buffer_t *i2cb, 
 uint8_t i2c0_master_tx_bytes_polling(uint8_t slave_address, i2c_buffer_t *i2cb, uint8_t len)
 {
     uint8_t i = 0;
-    uint8_t tmp = 0x96;
+    uint8_t tmp = 0;
+
+    if(len < 2)
+    {
+        return i2c0_master_tx_byte_polling(slave_address, &i2cb->buf[0] );
+    }
 
     i2c0_master_busy_wait();
-    I2C0_MSA_R = ( ( slave_address << 1 ) | I2C_TX  );
+    I2C0_MSA_R = ( ( slave_address << 1 ) | I2C_TX );
     I2C0_MDR_R = tmp;
     I2C0_MCS_R = ( I2C_MCS_START | I2C_MCS_RUN );
     i2c0_master_busy_wait();
@@ -124,7 +129,7 @@ uint8_t i2c0_master_tx_to_rx_bytes_polling(uint8_t slave_address, uint8_t len)
     I2C0_MSA_R = ( ( slave_address << 1 ) | I2C_TX  );
     I2C0_MDR_R = tmp;
     I2C0_MCS_R = ( I2C_MCS_START | I2C_MCS_RUN );
-    
+
     i2c0_master_busy_wait();
     I2C0_MSA_R = ( ( slave_address << 1 ) | I2C_RX  );
     I2C0_MCS_R = ( I2C_MCS_RUN | I2C_MCS_START );
@@ -176,7 +181,7 @@ uint8_t i2c0_slave_rxtx_byte_polling(uint8_t *byte, uint8_t blocking)
             }
             else if(*byte == 1)
             {
-                result = I2C0_SDR_R;   
+                result = I2C0_SDR_R;
             }
         }
         else if(I2C0_SCSR_R & I2C_SCSR_TREQ)

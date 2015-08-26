@@ -1,4 +1,4 @@
-CROSS=arm-none-eabi-
+CROSS=arm-unknown-eabi-
 CC=${CROSS}gcc
 LD=${CROSS}ld
 AS=${CROSS}as
@@ -12,8 +12,6 @@ CSRC= main.c \
 	pll.c \
 	systick.c \
 	uart.c \
-	adc.c \
-	ascii_helpers.c \
     i2c.c \
     gpio.c \
     hih6130.c \

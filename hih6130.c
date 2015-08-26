@@ -4,38 +4,49 @@
 static hih6130_sensor_t hih6130_sensor0;
 static i2c_device_t i2c_device0;
 
+#define HM_HIGH (0u)
+#define HM_LOW  (1u)
+#define TMP_HIGH     (2u)
+#define TMP_LOW      (3u)
+
 void hih6130_sensor_init0(void)
 {
     hih6130_sensor_init(& hih6130_sensor0);
 }
 
-void hih6130_sensor_init(hih6130_sensor_t * sen)
+void hih6130_sensor_init(hih6130_sensor_t * sensor)
 {
     i2c_device_init(& i2c_device0, 0);
 
-    sen->status  = 0;
-    sen->address = HIH6130_SLAVE_ADDRESS;
-    sen->temperature_data = 0;
-    sen->humidity_data = 0;
-    sen->fetch = 0;
-    sen->fd = & i2c_device0;
+    sensor->status  = 0;
+    sensor->address = HIH6130_SLAVE_ADDRESS;
+    sensor->temperature_data = 0;
+    sensor->humidity_data = 0;
+    sensor->fetch = 0;
+    sensor->fd = & i2c_device0;
 
-    sen->fd->init();
+    sensor->fd->init();
 }
 
-void hih6130_sensor_update(hih6130_sensor_t * sen)
+void hih6130_sensor_update0(void)
 {
-    uint8_t byte = 0;
+    hih6130_sensor_update(& hih6130_sensor0 );
+}
 
-    if(!sen->fetch)
+void hih6130_sensor_update(hih6130_sensor_t * sensor)
+{
+    if(!sensor->fetch)
     {
-        sen->fd->write(sen->address, & byte);
-        sen->fetch = 1;
+        sensor->fd->write(sensor->address, &sensor->fd->i2cb, 1);
+        sensor->fetch = 1;
     }
     else
     {
-        sen->fd->read(sen->address, sen->fd->i2cb/* this should be a address of */, 4)
-        sen->fetch = 0;
+        sensor->fd->read(sensor->address, &sensor->fd->i2cb, 4);
+        sensor->status = (sensor->fd->i2cb.buf[HM_HIGH] >> 6);
+        sensor->humidity_data = ( 0x3f & (sensor->fd->i2cb.buf[HM_HIGH]) << 8) | ( sensor->fd->i2cb.buf[HM_LOW]);
+        sensor->temperature_data = ( (sensor->fd->i2cb.buf[TMP_HIGH] << 8)  | (sensor->fd->i2cb.buf[TMP_LOW]) ) >> 2;
+        sensor->fetch = 0;
     }
 
 }

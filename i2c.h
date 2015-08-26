@@ -24,14 +24,14 @@
 // Master
 #define i2c0_master_busy_wait() while(I2C0_MCS_R & I2C_MCS_BUSY)
 
-typedef struct 
+typedef struct
 {
     #define I2C_BUF_SZ 32
-    uint8_t buf[I2C_BUF_SZ];
+    uint16_t buf[I2C_BUF_SZ];
     uint8_t sz;
 } i2c_buffer_t;
 
-typedef struct 
+typedef struct
 {
     uint8_t  num;
     uint8_t  address;
@@ -39,7 +39,7 @@ typedef struct
     uint8_t (*read) (uint8_t addr, i2c_buffer_t *i2cb, uint8_t len);
     uint8_t (*write)(uint8_t addr, i2c_buffer_t *i2cb, uint8_t len);
     i2c_buffer_t i2cb;
-    
+
 } i2c_device_t;
 
 void    i2c_device0_init(void);

@@ -4,7 +4,13 @@
 #include "ctypes.h"
 #include "i2c.h"
 
-typedef struct 
+#define HUMIDITY_BYTE_HIGH (0u)
+#define HUMIDITY_BYTE_LOW  (1u)
+#define TEMP_BYTE_HIGH     (2u)
+#define TEMP_BYTE_LOW      (3u)
+
+
+typedef struct
 {
 	#define HIH6130_SLAVE_ADDRESS 0x27
 	uint8_t  status;
@@ -19,5 +25,6 @@ typedef struct
 void hih6130_sensor_init0(void);
 void hih6130_sensor_init(hih6130_sensor_t * sen);
 void hih6130_sensor_update(hih6130_sensor_t * sen);
+void hih6130_sensor_update0(void);
 
 #endif
