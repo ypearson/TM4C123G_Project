@@ -1,1 +1,1 @@
-export PATH=$PWD/arm/gcc-arm-none-eabi-4_9-2015q2/bin/:$PWD/openocd/bin:$PATH
+export PATH=$PWD/arm/gcc-arm-none-eabi-4_8-2014q3/bin/:$PWD/openocd/bin:$PATH
