@@ -5,7 +5,7 @@
 
 typedef struct
 {
-	#define SZ 8
+	#define SZ 4
 	uint8_t  buf[SZ];
 	uint8_t *head;
 	uint8_t *tail;
