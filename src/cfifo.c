@@ -3,9 +3,11 @@
 
 void cfifo_init(cfifo_t *cf)
 {
+	uint8_t i = 0;
+
 	cf->sz = SZ;
 	cf->head = cf->buf[0];
-	cf->tail = cf->buf[SZ-1];
+	cf->tail = 0;
 	cf->cnt = 0;
 	for(i = 0; i < SZ; i++)
 	{
@@ -15,6 +17,7 @@ void cfifo_init(cfifo_t *cf)
 
 uint8_t cfifo_put(cfifo_t *cf, uint8_t *val)
 {
+
 
 }
 

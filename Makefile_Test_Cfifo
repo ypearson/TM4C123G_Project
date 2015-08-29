@@ -1,0 +1,53 @@
+# ==========================================
+#   Unity Makefile
+#
+#   Module - cfifo.c
+#
+# ==========================================
+
+# Module Under Test
+MODULE=cfifo
+
+# Compiler
+C_COMPILER=gcc
+
+# Unity & CMock directories
+U_ROOT=../Unity
+U_TEST=test
+U_TEST_RUNNER=test_runners
+#CM_ROOT=TDD/CMock/src
+#CM_MOCKS=test/mocks
+
+# Test name
+TARGET=Test$(MODULE).unitTest
+
+# Unity source files
+U_SRC_FILES=$(U_ROOT)/src/unity.c test/test_$(MODULE).c  $(U_TEST)/$(U_TEST_RUNNER)/Test$(MODULE)_Runner.c
+
+# Module source under test
+MODULE_SRC_FILE=src/$(MODULE).c
+
+# Mock source file
+#CMOCK_SRC_FILE=$(CM_MOCKS)/MockGPIOHardware.c $(CM_ROOT)/cmock.c
+
+
+# Includes
+INC_DIRS=-Isrc -Itest -I$(U_ROOT)/src -I$(CM_ROOT) -I$(CM_MOCKS)
+
+# Compiler options
+SYM=-DTEST
+
+all: clean default
+
+default:
+	mkdir -p $(U_TEST)/$(U_TEST_RUNNER)
+	#ruby TDD/CMock/lib/cmock.rb --mock_path=test/mocks src/GPIOHardware.h
+	ruby $(U_ROOT)/auto/generate_test_runner.rb $(U_TEST)/test_$(MODULE).c  $(U_TEST)/$(U_TEST_RUNNER)/Test$(MODULE)_Runner.c
+	$(C_COMPILER) $(INC_DIRS) $(SYM) $(U_SRC_FILES) $(CMOCK_SRC_FILE) $(MODULE_SRC_FILE) -o test/$(TARGET)
+	clear
+	./test/$(TARGET)
+
+clean:
+	@rm -f test/$(TARGET)
+	@rm -f src/*.o
+

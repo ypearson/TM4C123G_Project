@@ -8,16 +8,19 @@ CFLAGS= -c -g -Wall -nostartfiles -mcpu=cortex-m4 -mthumb
 AFLAGS= -c -g -mcpu=cortex-m4 -mthumb
 LDFLAGS=
 
-CSRC= main.c \
-	pll.c \
-	systick.c \
-	uart.c \
-    i2c.c \
-    gpio.c \
-    hih6130.c \
+SRCFOLDER=src
 
+CSRC=main.c \
+	 pll.c \
+	 systick.c \
+	 uart.c \
+     i2c.c \
+     gpio.c \
+     hih6130.c \
 
-ASRC = startup.s \
+CSRC:=$(addprefix $(SRCFOLDER)/, $(CSRC))
+
+ASRC = src/startup.s
 
 COBJ=$(CSRC:.c=.o)
 AOBJ=$(ASRC:.s=.o)
@@ -33,8 +36,8 @@ all: clean $(TARGET)
 	$(AS) $(AFLAGS) $< -o $@
 
 $(TARGET): $(OBJ)
-	$(LD) -T ld.script $(LDFLAGS) $^ -o $@
+	$(LD) -T $(SRCFOLDER)/ld.script $(LDFLAGS) $^ -o $@
 
 clean:
-	@rm -f *.o
+	@rm -f $(SRCFOLDER)/*.o
 	@rm -f $(TARGET)

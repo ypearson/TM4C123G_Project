@@ -3,3 +3,6 @@
 *.bin
 *.elf
 openocd/*
+test/test_runners/*
+test/*.unitTest
+arm/*
