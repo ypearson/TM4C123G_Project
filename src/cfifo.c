@@ -108,8 +108,9 @@ uint8_t cfifo_get(cfifo_t *cf, uint8_t *val)
 uint8_t cfifo_peek(cfifo_t *cf, uint8_t *val)
 {
     uint8_t res = 0;
+    const uint8_t cnt = cf->cnt;
 
-    if(cf->cnt)
+    if(cnt)
     {
         *val = *cf->tail;
     }
