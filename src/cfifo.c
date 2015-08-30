@@ -1,15 +1,5 @@
 #include "cfifo.h"
 
-// typedef struct
-// {
-//  #define SZ 4
-//  uint8_t  buf[SZ];
-//  uint8_t *head;
-//  uint8_t *tail;
-//  uint8_t  sz;
-//  uint8_t  cnt;
-// } cfifo_t;
-
 void cfifo_init(cfifo_t *cf)
 {
     uint8_t i = 0;
@@ -76,7 +66,7 @@ uint8_t cfifo_get(cfifo_t *cf, uint8_t *val)
     const uint8_t *buf = cf->buf;
     const uint8_t  cnt = cf->cnt;
 
-    if( cnt )
+    if(cnt)
     {
         *val = *cf->tail;
         if(tail + 1 < buf + sz)
