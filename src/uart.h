@@ -3,6 +3,10 @@
 
 #include "ctypes.h"
 
+#define PA1 (1<<1)
+#define PA0 (1<<0)
+
+
 void uart0_init(void);
 void putbyte(uint8_t data);
 void uart0_enable_int(void);
