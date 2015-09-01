@@ -18,11 +18,11 @@ void cfifo_init(cfifo_t *cf)
 uint8_t cfifo_put(cfifo_t * cf, uint8_t *val)
 {
     uint8_t res = 0;
-    const uint8_t  sz = cf->sz;
-    const uint8_t *head = cf->head;
-    const uint8_t *tail = cf->tail;
-    const uint8_t *buf = cf->buf;
-    const uint8_t  cnt = cf->cnt;
+    const uint8_t   sz   = cf->sz;
+    const uint8_t   cnt  = cf->cnt;
+    uint8_t * const head = cf->head;
+    uint8_t * const tail = cf->tail;
+    uint8_t * const buf  = cf->buf;
 
     if(cnt < sz)
     {
@@ -60,11 +60,11 @@ uint8_t cfifo_put(cfifo_t * cf, uint8_t *val)
 uint8_t cfifo_get(cfifo_t *cf, uint8_t *val)
 {
     uint8_t res = 1;
-    const uint8_t  sz = cf->sz;
-    const uint8_t *head = cf->head;
-    const uint8_t *tail = cf->tail;
-    const uint8_t *buf = cf->buf;
-    const uint8_t  cnt = cf->cnt;
+    const uint8_t   sz   = cf->sz;
+    const uint8_t   cnt  = cf->cnt;
+    uint8_t * const head = cf->head;
+    uint8_t * const tail = cf->tail;
+    uint8_t * const buf  = cf->buf;
 
     if(cnt)
     {
@@ -111,6 +111,14 @@ uint8_t cfifo_peek(cfifo_t *cf, uint8_t *val)
 
     return res;
 }
+uint8_t cfifo_pop(cfifo_t *cf, uint8_t *val)
+{
+    uint8_t res = 0;
+    const uint8_t cnt = cf->cnt;
+
+
+}
+
 
 uint8_t cfifo_cnt(cfifo_t *cf)
 {

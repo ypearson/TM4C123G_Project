@@ -1,9 +1,10 @@
 #include "tm4c123gh6pm.h"
 #include "uart.h"
 #include "cfifo.h"
+#include "ascii_helpers.h"
 
 static cfifo_t uart0_cfifo;
-static cfifo_t uart0_echo;
+static buffer_t buffer0;
 
 void uart0_init(void)
 {
@@ -24,10 +25,15 @@ void uart0_init(void)
                                         // configure PA1,PA0 as UART0
   GPIO_PORTA_PCTL_R   = (GPIO_PORTA_PCTL_R & 0xFFFFFF00) + 0x00000011;
   GPIO_PORTA_AMSEL_R &= ~0x03;          // disable analog functionality on PA1,PA0
+}
 
-  cfifo_init( &uart0_cfifo );
-  cfifo_init( &uart0_echo );
-  uart0_newline();
+void uart0_start(void)
+{
+    cfifo_init( &uart0_cfifo);
+    buffer_init( &buffer0, bSZ);
+    uart0_init();
+    uart0_newline();
+    uart0_put_string("-------UART0 UP-------\r\n");
 }
 
 void uart0_enable_int(void)
@@ -38,17 +44,26 @@ void uart0_enable_int(void)
   NVIC_PRI1_R = NVIC_PRI1_INT5_M;
 }
 
-void putbyte(uint8_t data)
+void uart0_put_byte(uint8_t data)
 {
   while( (UART0_FR_R & UART_FR_TXFF) != 0);
   UART0_DR_R = data;
 }
-void uart0_newline(void)
+
+void uart0_put_string(char *str)
 {
-  putbyte('\r');
-  putbyte('\n');
+    while(*str)
+    {
+        uart0_put_byte(*str++);
+    }
 }
 
+void uart0_newline(void)
+{
+  uart0_put_byte('\r');
+  uart0_put_byte('\n');
+}
+//uint32_to_ascii(buffer_t * const buf, const uint32_t input);
 void uart0_consume_incoming_data(void)
 {
   uint8_t byte;
@@ -62,18 +77,15 @@ void uart0_consume_incoming_data(void)
     }
     else
     {
-      putbyte(byte);
+      //uart0_put_byte(byte);
+        uint32_to_ascii(&buffer0, byte);
+        uart0_put_string(buffer0.data);
+
     }
   }
-
-
 }
 
 void UART0_Handler(void)
 {
     UART0_ICR_R |= UART_ICR_RXIC;
-
-    putbyte( (uint8_t)(UART0_DR_R & 0xFF) );
-
-
 }

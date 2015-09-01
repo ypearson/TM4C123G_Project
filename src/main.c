@@ -16,7 +16,7 @@ int main(void)
 
     gpio_porta_init();
 
-    uart0_init();
+    uart0_start();
 
     systick_init(200000);
     systick_enable_int();
@@ -27,5 +27,3 @@ int main(void)
 
     return 0;
 }
-
-

@@ -27,6 +27,7 @@ void buffer_print(buffer_t *buf, void (*print)(uint8_t byte), uint8_t stop )
 void uint32_to_ascii(buffer_t * const buf, const uint32_t input)
 {
   #define ASCII_OFFSET (0x30)
+  #define NULL         (0x00)
   #define SP           (0x20)
 
   uint8_t i = 0, r = 0;
@@ -38,7 +39,7 @@ void uint32_to_ascii(buffer_t * const buf, const uint32_t input)
     i++;
   }
   num = input;
-  buf->data[i--] = SP; //TODO, sz
+  buf->data[i--] = NULL; //TODO, sz
 
   while( num )
   {
@@ -50,6 +51,6 @@ void uint32_to_ascii(buffer_t * const buf, const uint32_t input)
   if( buf->data[0] == SP)
   {
     buf->data[0] = ASCII_OFFSET;
-    buf->data[1] = SP; //TODO, sz
+    buf->data[1] = NULL; //TODO, sz
   }
 }

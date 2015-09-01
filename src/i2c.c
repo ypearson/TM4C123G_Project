@@ -200,9 +200,6 @@ uint8_t i2c0_slave_rxtx_byte_polling(uint8_t *byte, uint8_t blocking)
 
 void I2C0_Handler(void)
 {
-    uint8_t tmp;
     I2C0_MICR_R = I2C_MICR_IC; // clear interrupt
     gpio_porta_toggle(PA2);
-
-
 }
