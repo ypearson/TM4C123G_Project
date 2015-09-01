@@ -111,11 +111,58 @@ uint8_t cfifo_peek(cfifo_t *cf, uint8_t *val)
 
     return res;
 }
+
 uint8_t cfifo_pop(cfifo_t *cf, uint8_t *val)
 {
     uint8_t res = 0;
-    const uint8_t cnt = cf->cnt;
+    const uint8_t   sz   = cf->sz;
+    const uint8_t   cnt  = cf->cnt;
+    uint8_t * const head = cf->head;
+    uint8_t * const tail = cf->tail;
+    uint8_t * const buf  = cf->buf;
 
+    if(cnt)
+    {
+        if(!head) // full
+        {
+            if(tail == buf)
+                cf->head = buf + sz - 1;
+            else
+                cf->head = tail - 1;
+
+            *val = *cf->head;
+            *cf->head = 0;
+            cf->cnt--;
+        }
+        else
+        {
+            if(cnt == 1)
+            {
+                cf->cnt = 0;
+                cf->tail = 0;
+                cf->head = tail;
+            }
+            else
+            {
+                if(head == buf)
+                    cf->head = buf + sz - 1;
+                else
+                    cf->head--;
+
+                cf->cnt--;
+            }
+
+            *val = *cf->head;
+            *cf->head = 0;
+        }
+
+    }
+    else
+    {
+        res = 1;
+    }
+
+    return res;
 
 }
 

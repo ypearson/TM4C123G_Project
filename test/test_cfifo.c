@@ -199,6 +199,57 @@ void test_cfifo_test_peek(void)
     TEST_ASSERT_EQUAL_HEX8(3, val);
 
     TEST_ASSERT_EQUAL_HEX8(1, cfifo_peek(&cf, &val));
+}
+
+void test_cfifo_test_pop(void)
+{
+
+    cfifo_init(&cf);
+    uint8_t val = 1;
+
+    // empty case
+    TEST_ASSERT_EQUAL_HEX8(1, cfifo_pop(&cf, &val));
+
+    // full case
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_put(&cf, &val));
+    val++;
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_put(&cf, &val));
+    val++;
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_put(&cf, &val));
+    val++;
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_put(&cf, &val));
+    val++;
+
+    TEST_ASSERT_EQUAL_HEX8(1, cfifo_put(&cf, &val));
+    val++;
+
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_pop(&cf, &val));
+    TEST_ASSERT_EQUAL_HEX8(4, val);
+
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_pop(&cf, &val));
+    TEST_ASSERT_EQUAL_HEX8(3, val);
+
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_pop(&cf, &val));
+    TEST_ASSERT_EQUAL_HEX8(2, val);
+
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_pop(&cf, &val));
+    TEST_ASSERT_EQUAL_HEX8(1, val);
+
+    cfifo_init(&cf);
+    val = 1;
+
+
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_put(&cf, &val));
+    val++;
+
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_put(&cf, &val));
+    val++;
+
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_get(&cf, &val));
+    TEST_ASSERT_EQUAL_HEX8(1, val);
+
+    TEST_ASSERT_EQUAL_HEX8(0, cfifo_pop(&cf, &val));
+    TEST_ASSERT_EQUAL_HEX8(2, val);
 
 
 
@@ -209,6 +260,7 @@ void test_cfifo_test_peek(void)
 
 
 }
+
 
 
 
