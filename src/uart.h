@@ -10,6 +10,8 @@
 void uart0_init(void);
 void putbyte(uint8_t data);
 void uart0_enable_int(void);
+void uart0_newline(void);
+void uart0_consume_incoming_data(void);
 
 
 #endif

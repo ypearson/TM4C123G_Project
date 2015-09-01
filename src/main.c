@@ -12,23 +12,16 @@ void enableInterrupts(void);
 
 int main(void)
 {
-    uint8_t byte = 0;
-
     pll_init();
+
     gpio_porta_init();
 
-    if(!I2C_SLAVE_MODE)
-    {
-        systick_init(200000);
-        systick_enable_int();
-        hih6130_sensor_init0();
-        enableInterrupts();
-    }
-    else
-    {
-        i2c0_slave_init();
-        i2c0_slave_rxtx_byte_polling(&byte, 1);
-    }
+    uart0_init();
+
+    systick_init(200000);
+    systick_enable_int();
+
+    enableInterrupts();
 
     while(1);
 

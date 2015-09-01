@@ -4,6 +4,7 @@
 #include "i2c.h"
 #include "gpio.h"
 #include "hih6130.h"
+#include "uart.h"
 
 static uint8_t toggle = 0;
 
@@ -25,5 +26,6 @@ void systick_disable_int(void)
 
 void SysTick_Handler(void)
 {
-  hih6130_sensor_update0(); //TODO: shouldnt be in ISR.
+    uart0_consume_incoming_data();
+
 }

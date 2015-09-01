@@ -17,6 +17,7 @@ CSRC=main.c \
      i2c.c \
      gpio.c \
      hih6130.c \
+     cfifo.c \
 
 CSRC:=$(addprefix $(SRCFOLDER)/, $(CSRC))
 
