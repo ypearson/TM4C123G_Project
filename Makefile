@@ -19,6 +19,8 @@ CSRC=main.c \
      hih6130.c \
      cfifo.c \
      ascii_helpers.c \
+     cstring.c \
+     cmds.c \
      
 
 CSRC:=$(addprefix $(SRCFOLDER)/, $(CSRC))

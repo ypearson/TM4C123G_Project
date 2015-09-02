@@ -9,6 +9,8 @@ static buffer_t buffer0;
 const char* BACKSPACE = "\x8\x20\x8";
 const char* NEWLINE   = "\r\n";
 const char* PROMPT   = "es>";
+const char* ERROR   = "error\r\n";
+
 static uint8_t char_count = 0;
 
 void uart0_init(void)
@@ -77,7 +79,13 @@ void uart0_prompt(void)
  uart0_put_string(PROMPT);
 }
 
-void uart0_consume_incoming_data(void)
+void uart0_error(void)
+{
+ uart0_put_string(ERROR);
+}
+
+
+void uart0_consume_incoming_data(void) // change to switch or small statemachine
 {
   uint8_t byte;
 
@@ -89,7 +97,17 @@ void uart0_consume_incoming_data(void)
     {
       uart0_newline();
       uart0_prompt();
+      buffer0.data[char_count] = 0;
+      if(char_count)
+      {
+        uart0_buffer_to_cfifo_transfer();
+      }
       char_count = 0;
+      while( cfifo_cnt(&uart0_cfifo) ) // test
+      {
+        cfifo_get(&uart0_cfifo, &byte);
+        uart0_put_byte(byte);
+      }
     }
     else if(byte == 0x7F)
     {
@@ -101,14 +119,51 @@ void uart0_consume_incoming_data(void)
     }
     else
     {
-      uart0_put_byte(byte);
-      char_count++;
+      if( char_count < buffer0.sz - 1)
+      {
+        uart0_put_byte(byte);
+        buffer0.data[char_count++] = byte;
+      }
+      
     }
     // uint32_to_ascii(&buffer0, byte);
     // uart0_put_string(buffer0.data);
 
   }
 }
+
+void uart0_buffer_to_cfifo_transfer(void)
+{
+    uint8_t *pdata = buffer0.data; //TODO:use params
+
+    while(*pdata)
+    {
+        cfifo_put(& uart0_cfifo, pdata++);
+    }
+}
+
+void process_cmd(void)
+{
+
+}
+
+int strcmp(const char *s1, const char *s2)
+{
+    int res = 0;
+    int tmp = 0;
+    while(*s1 && *s2)
+    {
+        tmp = *s1++ - *s2++;
+        if(!tmp)
+        {
+            res = 1;
+            break;
+        }
+    }
+
+    return res;
+}
+
 
 void UART0_Handler(void)
 {

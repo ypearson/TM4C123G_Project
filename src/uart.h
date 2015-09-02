@@ -12,9 +12,12 @@ void uart0_put_byte(uint8_t data);
 void uart0_put_string(char *str);
 void uart0_enable_int(void);
 void uart0_newline(void);
+void uart0_error(void);
 void uart0_consume_incoming_data(void);
+void uart0_buffer_to_cfifo_transfer(void);
 void uart0_start(void);
 void uart0_prompt(void);
+int strcmp(const char *s1, const char *s2);
 
 
 
