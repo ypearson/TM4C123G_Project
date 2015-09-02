@@ -14,6 +14,7 @@ void uart0_enable_int(void);
 void uart0_newline(void);
 void uart0_consume_incoming_data(void);
 void uart0_start(void);
+void uart0_prompt(void);
 
 
 

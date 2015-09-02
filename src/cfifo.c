@@ -163,7 +163,6 @@ uint8_t cfifo_pop(cfifo_t *cf, uint8_t *val)
     }
 
     return res;
-
 }
 
 

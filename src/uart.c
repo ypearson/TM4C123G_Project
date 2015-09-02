@@ -33,7 +33,8 @@ void uart0_start(void)
     buffer_init( &buffer0, bSZ);
     uart0_init();
     uart0_newline();
-    uart0_put_string("-------UART0 UP-------\r\n");
+    uart0_put_string("# Embedded Shell #\r\n");
+    uart0_prompt();
 }
 
 void uart0_enable_int(void)
@@ -63,7 +64,17 @@ void uart0_newline(void)
   uart0_put_byte('\r');
   uart0_put_byte('\n');
 }
-//uint32_to_ascii(buffer_t * const buf, const uint32_t input);
+void uart0_backspace(void)
+{
+  uart0_put_byte(0x8);
+  uart0_put_byte(0x20);
+  uart0_put_byte(0x8);
+}
+void uart0_prompt(void)
+{
+  uart0_put_byte('>');
+}
+
 void uart0_consume_incoming_data(void)
 {
   uint8_t byte;
@@ -71,17 +82,23 @@ void uart0_consume_incoming_data(void)
   while(! (UART0_FR_R & UART_FR_RXFE) )
   {
     byte = (UART0_DR_R & 0xFF);
-    if(byte == '\r')
+
+    if(byte == '\r' || byte == 0x3)
     {
       uart0_newline();
+      uart0_prompt();
+    }
+    else if(byte == 0x7F)
+    {
+      uart0_backspace();
     }
     else
     {
-      //uart0_put_byte(byte);
-        uint32_to_ascii(&buffer0, byte);
-        uart0_put_string(buffer0.data);
-
+      uart0_put_byte(byte);
     }
+    // uint32_to_ascii(&buffer0, byte);
+    // uart0_put_string(buffer0.data);
+
   }
 }
 

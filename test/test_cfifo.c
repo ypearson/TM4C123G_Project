@@ -238,7 +238,6 @@ void test_cfifo_test_pop(void)
     cfifo_init(&cf);
     val = 1;
 
-
     TEST_ASSERT_EQUAL_HEX8(0, cfifo_put(&cf, &val));
     val++;
 
