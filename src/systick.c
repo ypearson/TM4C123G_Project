@@ -26,6 +26,5 @@ void systick_disable_int(void)
 
 void SysTick_Handler(void)
 {
-    uart0_consume_incoming_data();
 
 }
