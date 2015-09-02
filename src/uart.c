@@ -6,6 +6,11 @@
 static cfifo_t uart0_cfifo;
 static buffer_t buffer0;
 
+const char* BACKSPACE = "\x8\x20\x8";
+const char* NEWLINE   = "\r\n";
+const char* PROMPT   = "es>";
+static uint8_t char_count = 0;
+
 void uart0_init(void)
 {
   SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART0; // activate UART0
@@ -33,7 +38,7 @@ void uart0_start(void)
     buffer_init( &buffer0, bSZ);
     uart0_init();
     uart0_newline();
-    uart0_put_string("# Embedded Shell #\r\n");
+    uart0_put_string("# embedded shell\r\n");
     uart0_prompt();
 }
 
@@ -61,18 +66,15 @@ void uart0_put_string(char *str)
 
 void uart0_newline(void)
 {
-  uart0_put_byte('\r');
-  uart0_put_byte('\n');
+  uart0_put_string(NEWLINE);
 }
 void uart0_backspace(void)
 {
-  uart0_put_byte(0x8);
-  uart0_put_byte(0x20);
-  uart0_put_byte(0x8);
+  uart0_put_string(BACKSPACE);
 }
 void uart0_prompt(void)
 {
-  uart0_put_byte('>');
+ uart0_put_string(PROMPT);
 }
 
 void uart0_consume_incoming_data(void)
@@ -83,18 +85,24 @@ void uart0_consume_incoming_data(void)
   {
     byte = (UART0_DR_R & 0xFF);
 
-    if(byte == '\r' || byte == 0x3)
+    if(byte == '\r' || byte == 3)
     {
       uart0_newline();
       uart0_prompt();
+      char_count = 0;
     }
     else if(byte == 0x7F)
     {
-      uart0_backspace();
+      if(char_count)
+      {
+        uart0_backspace();
+        char_count--;
+      }
     }
     else
     {
       uart0_put_byte(byte);
+      char_count++;
     }
     // uint32_to_ascii(&buffer0, byte);
     // uart0_put_string(buffer0.data);
