@@ -203,7 +203,7 @@ void process_cmd(void)
 
   while(cmds[i].name)
   {
-    if(!cstrcmp(*argv, cmds[i].name))
+    if(!cstrcmp(s, cmds[i].name))
     {
       ret = cmds[i].fnc(0,0);
       break;
