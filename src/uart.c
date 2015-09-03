@@ -2,16 +2,44 @@
 #include "uart.h"
 #include "cfifo.h"
 #include "ascii_helpers.h"
+#include "cmds.h"
+
+cmd_t cmds[3] = {
+                  {"help", "this is the usage statement for help.", test_function0 },
+                  {"hello", "this is the usage statement for hello.", test_function1},
+                  {0,0,0}};
 
 static cfifo_t uart0_cfifo;
 static buffer_t buffer0;
 
 const char* BACKSPACE = "\x8\x20\x8";
 const char* NEWLINE   = "\r\n";
+const char* SPACES = "    ";
 const char* PROMPT   = "es>";
 const char* ERROR   = "error\r\n";
 
 static uint8_t char_count = 0;
+
+uint8_t test_function0(int argc, char **argv)
+{
+  uint8_t i = 0;
+
+  while(cmds[i].name)
+  {
+    uart0_put_string(NEWLINE);
+    uart0_put_string(cmds[i].name);
+    uart0_put_string(SPACES);
+    uart0_put_string(cmds[i].usage);
+    i++;
+  }
+  uart0_put_string(NEWLINE);
+  return 0;
+}
+uint8_t test_function1(int argc, char **argv)
+{
+  uart0_put_string("test_function1\r\n");
+  return 0;
+}
 
 void uart0_init(void)
 {
@@ -78,7 +106,6 @@ void uart0_prompt(void)
 {
  uart0_put_string(PROMPT);
 }
-
 void uart0_error(void)
 {
  uart0_put_string(ERROR);
@@ -101,13 +128,16 @@ void uart0_consume_incoming_data(void) // change to switch or small statemachine
       if(char_count)
       {
         uart0_buffer_to_cfifo_transfer();
+        process_cmd();
+        uart0_newline();
+        uart0_prompt();
       }
       char_count = 0;
-      while( cfifo_cnt(&uart0_cfifo) ) // test
-      {
-        cfifo_get(&uart0_cfifo, &byte);
-        uart0_put_byte(byte);
-      }
+      // while( cfifo_cnt(&uart0_cfifo) ) // test
+      // {
+      //   cfifo_get(&uart0_cfifo, &byte);
+      //   uart0_put_byte(byte);
+      // }
     }
     else if(byte == 0x7F)
     {
@@ -124,7 +154,7 @@ void uart0_consume_incoming_data(void) // change to switch or small statemachine
         uart0_put_byte(byte);
         buffer0.data[char_count++] = byte;
       }
-      
+
     }
     // uint32_to_ascii(&buffer0, byte);
     // uart0_put_string(buffer0.data);
@@ -144,26 +174,36 @@ void uart0_buffer_to_cfifo_transfer(void)
 
 void process_cmd(void)
 {
+  uint8_t i, buf[64];
+  uint8_t byte = 0;
+  uint8_t ret = 0;
 
-}
+  char *s = buf;
+  for(i = 0; i < 64; i++)
+  {
+    buf[i] = 0;
+  }
+  i = 0;
 
-int strcmp(const char *s1, const char *s2)
-{
-    int res = 0;
-    int tmp = 0;
-    while(*s1 && *s2)
+  while(byte != 0x20 && ret == 0)
+  {
+    ret = cfifo_get(&uart0_cfifo, &byte);
+    buf[i++] = byte;
+  }
+  buf[i-1] = 0;
+  i = 0;
+
+  while(cmds[i].name)
+  {
+    if(!cstrcmp(s, cmds[i].name))
     {
-        tmp = *s1++ - *s2++;
-        if(!tmp)
-        {
-            res = 1;
-            break;
-        }
+      ret = cmds[i].fnc(0,0);
+      break;
     }
+    i++;
+  }
 
-    return res;
 }
-
 
 void UART0_Handler(void)
 {

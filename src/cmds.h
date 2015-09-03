@@ -3,9 +3,9 @@
 
 #include "ctypes.h"
 
-typedef struct 
+typedef struct
 {
-	const char *cmd;
+	const char *name;
 	const char *usage;
 	uint8_t (*fnc)(int argc, char **argv);
 } cmd_t;

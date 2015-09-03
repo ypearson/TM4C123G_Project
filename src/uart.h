@@ -17,8 +17,8 @@ void uart0_consume_incoming_data(void);
 void uart0_buffer_to_cfifo_transfer(void);
 void uart0_start(void);
 void uart0_prompt(void);
-int strcmp(const char *s1, const char *s2);
-
-
+void process_cmd(void);
+uint8_t test_function0(int argc, char **argv);
+uint8_t test_function1(int argc, char **argv);
 
 #endif
