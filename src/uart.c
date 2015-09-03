@@ -188,12 +188,16 @@ void process_cmd(void)
   }
   i = 0;
 
-  while(byte != 0x20 && ret == 0)
+  while(!ret)
   {
     ret = cfifo_get(&uart0_cfifo, &byte);
-    buf[i++] = byte;
+    if(byte == 0x20)
+      break;
+    else
+      buf[i++] = byte;
   }
-  buf[i-1] = 0;
+  buf[i] = 0;
+
   i = 0;
 
   while(cmds[i].name)
