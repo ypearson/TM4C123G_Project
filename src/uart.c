@@ -177,32 +177,33 @@ void uart0_buffer_to_cfifo_transfer(void)
 
 void process_cmd(void)
 {
-  uint8_t i, buf[64];
+  uint8_t i, arg[64];
   uint8_t byte = 0;
   uint8_t ret = 0;
+  char **argv = arg;
 
-  char *s = buf;
+  char *s = arg;
   for(i = 0; i < 64; i++)
   {
-    buf[i] = 0;
+    arg[i] = 0;
   }
   i = 0;
 
-  while(!ret)
+  for(;;)
   {
     ret = cfifo_get(&uart0_cfifo, &byte);
-    if(byte == 0x20)
+    if(byte == 0x20 || ret)
       break;
     else
-      buf[i++] = byte;
+      arg[i++] = byte;
   }
-  buf[i] = 0;
+  arg[i] = 0;
 
   i = 0;
 
   while(cmds[i].name)
   {
-    if(!cstrcmp(s, cmds[i].name))
+    if(!cstrcmp(*argv, cmds[i].name))
     {
       ret = cmds[i].fnc(0,0);
       break;

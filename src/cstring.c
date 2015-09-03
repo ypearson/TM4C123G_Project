@@ -40,7 +40,7 @@ int cstrcmp(const char *s1, const char *s2)
     return res;
 }
 
-void memset(void *s, int c, int sz)
-{
+// void memset(void *s, int c, int sz)
+// {
 
-}
+// }
