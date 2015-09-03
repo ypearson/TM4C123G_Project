@@ -4,9 +4,12 @@
 #include "ascii_helpers.h"
 #include "cmds.h"
 
-cmd_t cmds[3] = {
+cmd_t cmds[6] = {
                   {"help", "this is the usage statement for help.", test_function0 },
-                  {"hello", "this is the usage statement for hello.", test_function1},
+                  {"ls", "this is the usage statement for hello.", test_function1},
+                  {"cd", "this is the usage statement for hello.", test_function1},
+                  {"action1", "this is the usage statement for hello.", test_function1},
+                  {"action2", "this is the usage statement for hello.", test_function1},
                   {0,0,0}};
 
 static cfifo_t uart0_cfifo;
