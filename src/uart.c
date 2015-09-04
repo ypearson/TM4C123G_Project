@@ -3,12 +3,22 @@
 #include "cfifo.h"
 #include "ascii_helpers.h"
 #include "cmds.h"
+#include "vars.h"
+
+// typedef struct
+// {
+//   char    *name;
+//   uint8_t  data;
+//   uint8_t *link;
+
+// }vars_t;
+
 
 cmd_t cmds[6] = {
                   {"help", "this is the usage statement for help.", test_function0 },
-                  {"ls", "this is the usage statement for hello.", test_function1},
-                  {"cd", "this is the usage statement for hello.", test_function1},
-                  {"get", "print value of target variable.", test_function1},
+                  {"ls", "this is the usage statement for hello.", cmd_ls },
+                  {"cd", "this is the usage statement for hello.", test_function1 },
+                  {"get", "print value of target variable.", cmd_get},
                   {"set", "set value of target variable.", test_function1},
                   {0,0,0}};
 
@@ -22,6 +32,11 @@ const char* PROMPT   = "es>";
 const char* ERROR   = "error\r\n";
 
 static uint8_t char_count = 0;
+
+vars_t vars[3] = { {"v0", 26, &vars[0].data},
+                   {"v1", 16, &vars[1].data},
+                   {0,0,0}};
+
 
 uint8_t test_function0(int argc, char **argv)
 {
@@ -41,8 +56,53 @@ uint8_t test_function0(int argc, char **argv)
 uint8_t test_function1(int argc, char **argv)
 {
     uart0_put_string(argv[0]);
-    uart0_put_string(argv[1]);
-    uart0_put_string(argv[2]);
+  return 0;
+}
+
+uint8_t cmd_get(int argc, char **argv)
+{
+  uint8_t i = 0;
+  buffer_t buf;
+  buffer_init(& buf, bSZ);
+  uart0_put_string(NEWLINE);
+
+  if(argc != 2)
+    return 1;
+  else
+  {
+     while(vars[i].name)
+     {
+      if(!cstrcmp(argv[1], vars[i].name))
+      {
+        uart0_put_string(vars[i].name);
+        uart0_put_string(SPACES);
+        uint32_to_ascii(& buf, vars[i].data);
+        uart0_put_string(buf.data);
+        break;
+      }
+      i++;
+     }
+   }
+  return 0;
+}
+
+uint8_t cmd_ls(int argc, char **argv)
+{
+  uint8_t i = 0;
+  buffer_t buf;
+  uart0_put_string(NEWLINE);
+
+  while(vars[i].name)
+   {
+      uart0_put_string(vars[i].name);
+      uart0_put_string(SPACES);
+      buffer_init(& buf, bSZ);
+      uint32_to_ascii(& buf, vars[i].data);
+      uart0_put_string(buf.data);
+      uart0_put_string(NEWLINE);
+      i++;
+   }
+
   return 0;
 }
 
@@ -173,7 +233,7 @@ void uart0_consume_incoming_data(void) // change to switch or small statemachine
 // void uart0_consume_incoming_data1(void) // change to switch or small statemachine
 // {
 //   uint8_t byte;
-  
+
 //   while(! (UART0_FR_R & UART_FR_RXFE) )
 //   {
 //     byte = (UART0_DR_R & 0xFF);
@@ -205,7 +265,7 @@ void uart0_consume_incoming_data(void) // change to switch or small statemachine
 //             else if
 
 
-        
+
 //         default:
 //         break
 

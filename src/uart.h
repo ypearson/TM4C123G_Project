@@ -20,5 +20,7 @@ void uart0_prompt(void);
 void process_cmd(void);
 uint8_t test_function0(int argc, char **argv);
 uint8_t test_function1(int argc, char **argv);
+uint8_t cmd_get(int argc, char **argv);
+uint8_t cmd_ls(int argc, char **argv);
 
 #endif
