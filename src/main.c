@@ -23,7 +23,7 @@ int main(void)
 
     enableInterrupts();
 
-    while(1)
+    for(;;)
     {
     	uart0_consume_incoming_data();
     }

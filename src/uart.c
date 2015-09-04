@@ -40,7 +40,9 @@ uint8_t test_function0(int argc, char **argv)
 }
 uint8_t test_function1(int argc, char **argv)
 {
-  uart0_put_string(*argv);
+    uart0_put_string(argv[0]);
+    uart0_put_string(argv[1]);
+    uart0_put_string(argv[2]);
   return 0;
 }
 
@@ -179,13 +181,11 @@ void process_cmd(void)
 {
   uint8_t i;
   char arg[64];
-  uint8_t byte = 0;
+  char byte = 0;
   uint8_t ret = 0;
-  uint8_t new_arg = 0;
+  uint8_t new_arg = 1;
   char *argv[4];
-  char argc = 0;
-
-  argv[argc++] = arg;
+  int argc = 0;
 
   for(i = 0; i < 64; i++)
   {
@@ -195,7 +195,6 @@ void process_cmd(void)
 
   while(!ret)
   {
-
     for(;;)
     {
       ret = cfifo_get(&uart0_cfifo, &byte);
@@ -213,21 +212,19 @@ void process_cmd(void)
       else
         arg[i++] = byte;
     }
-    arg[i] = 0;
+    arg[i++] = 0;
   }
-
   i = 0;
 
   while(cmds[i].name)
   {
     if(!cstrcmp(argv[0], cmds[i].name))
     {
-      ret = cmds[i].fnc(0,0);
+      ret = cmds[i].fnc(argc,argv);
       break;
     }
     i++;
   }
-
 }
 
 void UART0_Handler(void)
