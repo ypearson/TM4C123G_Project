@@ -40,7 +40,7 @@ uint8_t test_function0(int argc, char **argv)
 }
 uint8_t test_function1(int argc, char **argv)
 {
-  uart0_put_string("test_function1\r\n");
+  uart0_put_string(*argv);
   return 0;
 }
 
@@ -177,33 +177,50 @@ void uart0_buffer_to_cfifo_transfer(void)
 
 void process_cmd(void)
 {
-  uint8_t i, arg[64];
+  uint8_t i;
+  char arg[64];
   uint8_t byte = 0;
   uint8_t ret = 0;
-  char **argv = arg;
+  uint8_t new_arg = 0;
+  char *argv[4];
+  char argc = 0;
 
-  char *s = arg;
+  argv[argc++] = arg;
+
   for(i = 0; i < 64; i++)
   {
     arg[i] = 0;
   }
   i = 0;
 
-  for(;;)
+  while(!ret)
   {
-    ret = cfifo_get(&uart0_cfifo, &byte);
-    if(byte == 0x20 || ret)
-      break;
-    else
-      arg[i++] = byte;
+
+    for(;;)
+    {
+      ret = cfifo_get(&uart0_cfifo, &byte);
+      if(byte == 0x20 || ret)
+      {
+        new_arg = 1;
+        break;
+      }
+      else if(new_arg)
+      {
+        new_arg = 0;
+        argv[argc++] = arg+i;
+        arg[i++] = byte;
+      }
+      else
+        arg[i++] = byte;
+    }
+    arg[i] = 0;
   }
-  arg[i] = 0;
 
   i = 0;
 
   while(cmds[i].name)
   {
-    if(!cstrcmp(s, cmds[i].name))
+    if(!cstrcmp(argv[0], cmds[i].name))
     {
       ret = cmds[i].fnc(0,0);
       break;
