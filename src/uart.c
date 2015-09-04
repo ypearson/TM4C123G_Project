@@ -8,8 +8,8 @@ cmd_t cmds[6] = {
                   {"help", "this is the usage statement for help.", test_function0 },
                   {"ls", "this is the usage statement for hello.", test_function1},
                   {"cd", "this is the usage statement for hello.", test_function1},
-                  {"action1", "this is the usage statement for hello.", test_function1},
-                  {"action2", "this is the usage statement for hello.", test_function1},
+                  {"get", "print value of target variable.", test_function1},
+                  {"set", "set value of target variable.", test_function1},
                   {0,0,0}};
 
 static cfifo_t uart0_cfifo;
@@ -166,6 +166,51 @@ void uart0_consume_incoming_data(void) // change to switch or small statemachine
 
   }
 }
+
+// enum states { NEW_CHAR, STORE_CHAR, GOT_SPACE, GOT_ANOTHER_SPACE, THROW_OUT, NEW_LINE } current_state;
+// state = WAIT_FOR_CHAR;
+
+// void uart0_consume_incoming_data1(void) // change to switch or small statemachine
+// {
+//   uint8_t byte;
+  
+//   while(! (UART0_FR_R & UART_FR_RXFE) )
+//   {
+//     byte = (UART0_DR_R & 0xFF);
+//     switch (state)
+//     {
+//         case NEW_CHAR:
+
+//             if('a' <= byte <= 'z' || '0' <= byte <= '9' || byte == ' ' )
+//             {
+//                 state = STORE_CHAR;
+//             }
+//             else if(byte == '\r')
+//             {
+//                 state = NEWLINE
+//             }
+
+//         case STORE_CHAR:
+
+//             buffer0.data[char_count++] = byte;
+
+//             if(byte == ' ')
+//                 state = GOT_SPACE;
+//         break;
+
+//         case GOT_SPACE:
+
+//             if(byte == ' ')
+//                 state = GOT_SPACE;
+//             else if
+
+
+        
+//         default:
+//         break
+
+//     }
+// }
 
 void uart0_buffer_to_cfifo_transfer(void)
 {
