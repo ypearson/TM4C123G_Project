@@ -54,3 +54,40 @@ void uint32_to_ascii(buffer_t * const buf, const uint32_t input)
     buf->data[1] = NULL; //TODO, sz
   }
 }
+
+uint64_t uint32_to_ascii_hex(buffer_t * const buf, const uint32_t input)
+{
+  uint64_t input64 = 0;
+  uint64_t data[8];
+  uint64_t lessa = 0x30;
+  uint64_t morea = 0x37;
+  uint64_t mask = 0xF;
+  uint64_t nine = 0x9;
+  uint8_t i;
+
+  for(i = 0; i < 8; i++)
+  {
+    data[i] = 0;
+  }
+
+  for(i = 0; i < 8; i++)
+  {
+    data[i] = ( ( ( (uint64_t) input ) & ( mask << 4*i ) ) << 4*i );
+    if( ( (data[i] & ( mask << 8*i) ) ) > ( nine << 8*i ) )
+      data[i] += (morea << 8*i);
+    else
+      data[i] += (lessa << 8*i);
+  }
+
+  for(i = 0; i < 8; i++)
+  {
+    input64 += data[i];
+  }
+
+  for(i = 0; i < 8; i++)
+  {
+    buf->data[i] = (uint8_t) ( 0xFF & (input64 >> (2*(7-i)*4)) );
+  }
+
+  return input64;
+}

@@ -53,9 +53,10 @@ uint8_t test_function0(int argc, char **argv)
   uart0_put_string(NEWLINE);
   return 0;
 }
+
 uint8_t test_function1(int argc, char **argv)
 {
-    uart0_put_string(argv[0]);
+  uart0_put_string(argv[0]);
   return 0;
 }
 

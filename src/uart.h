@@ -2,6 +2,7 @@
 #define _UART_H
 
 #include "ctypes.h"
+#include "ascii_helpers.h"
 
 #define PA1 (1<<1)
 #define PA0 (1<<0)
@@ -22,5 +23,6 @@ uint8_t test_function0(int argc, char **argv);
 uint8_t test_function1(int argc, char **argv);
 uint8_t cmd_get(int argc, char **argv);
 uint8_t cmd_ls(int argc, char **argv);
+uint64_t uint32_to_ascii_hex(buffer_t * const buf, const uint32_t input);
 
 #endif
