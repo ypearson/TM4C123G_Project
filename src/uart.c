@@ -5,107 +5,17 @@
 #include "cmds.h"
 #include "vars.h"
 
-// typedef struct
-// {
-//   char    *name;
-//   uint8_t  data;
-//   uint8_t *link;
-
-// }vars_t;
-
-
-cmd_t cmds[6] = {
-                  {"help", "this is the usage statement for help.", test_function0 },
-                  {"ls", "this is the usage statement for hello.", cmd_ls },
-                  {"cd", "this is the usage statement for hello.", test_function1 },
-                  {"get", "print value of target variable.", cmd_get},
-                  {"set", "set value of target variable.", test_function1},
-                  {0,0,0}};
-
-static cfifo_t uart0_cfifo;
-static buffer_t buffer0;
+static uint8_t char_count = 0;
 
 const char* BACKSPACE = "\x8\x20\x8";
 const char* NEWLINE   = "\r\n";
 const char* SPACES = "    ";
 const char* PROMPT   = "es>";
 const char* ERROR   = "error\r\n";
+const char* HEX   = "  0x";
 
-static uint8_t char_count = 0;
-
-vars_t vars[3] = { {"v0", 26, &vars[0].data},
-                   {"v1", 16, &vars[1].data},
-                   {0,0,0}};
-
-
-uint8_t test_function0(int argc, char **argv)
-{
-  uint8_t i = 0;
-
-  while(cmds[i].name)
-  {
-    uart0_put_string(NEWLINE);
-    uart0_put_string(cmds[i].name);
-    uart0_put_string(SPACES);
-    uart0_put_string(cmds[i].usage);
-    i++;
-  }
-  uart0_put_string(NEWLINE);
-  return 0;
-}
-
-uint8_t test_function1(int argc, char **argv)
-{
-  uart0_put_string(argv[0]);
-  return 0;
-}
-
-uint8_t cmd_get(int argc, char **argv)
-{
-  uint8_t i = 0;
-  buffer_t buf;
-  buffer_init(& buf, bSZ);
-  uart0_put_string(NEWLINE);
-
-  if(argc != 2)
-    return 1;
-  else
-  {
-     while(vars[i].name)
-     {
-      if(!cstrcmp(argv[1], vars[i].name))
-      {
-        uart0_put_string(vars[i].name);
-        uart0_put_string(SPACES);
-        uint32_to_ascii(& buf, vars[i].data);
-        uart0_put_string(buf.data);
-        break;
-      }
-      i++;
-     }
-   }
-  return 0;
-}
-
-uint8_t cmd_ls(int argc, char **argv)
-{
-  uint8_t i = 0;
-  buffer_t buf;
-  uart0_put_string(NEWLINE);
-
-  while(vars[i].name)
-   {
-      uart0_put_string(vars[i].name);
-      uart0_put_string(SPACES);
-      buffer_init(& buf, bSZ);
-      uint32_to_ascii(& buf, vars[i].data);
-      uart0_put_string(buf.data);
-      uart0_put_string(NEWLINE);
-      i++;
-   }
-
-  return 0;
-}
+static buffer_t buffer0;
+static cfifo_t uart0_cfifo;
 
 void uart0_init(void)
 {
@@ -176,6 +86,15 @@ void uart0_error(void)
 {
  uart0_put_string(ERROR);
 }
+void uart0_hex(void)
+{
+ uart0_put_string(HEX);
+}
+void uart0_spaces(void)
+{
+ uart0_put_string(SPACES);
+}
+
 
 
 void uart0_consume_incoming_data(void) // change to switch or small statemachine
@@ -228,51 +147,6 @@ void uart0_consume_incoming_data(void) // change to switch or small statemachine
   }
 }
 
-// enum states { NEW_CHAR, STORE_CHAR, GOT_SPACE, GOT_ANOTHER_SPACE, THROW_OUT, NEW_LINE } current_state;
-// state = WAIT_FOR_CHAR;
-
-// void uart0_consume_incoming_data1(void) // change to switch or small statemachine
-// {
-//   uint8_t byte;
-
-//   while(! (UART0_FR_R & UART_FR_RXFE) )
-//   {
-//     byte = (UART0_DR_R & 0xFF);
-//     switch (state)
-//     {
-//         case NEW_CHAR:
-
-//             if('a' <= byte <= 'z' || '0' <= byte <= '9' || byte == ' ' )
-//             {
-//                 state = STORE_CHAR;
-//             }
-//             else if(byte == '\r')
-//             {
-//                 state = NEWLINE
-//             }
-
-//         case STORE_CHAR:
-
-//             buffer0.data[char_count++] = byte;
-
-//             if(byte == ' ')
-//                 state = GOT_SPACE;
-//         break;
-
-//         case GOT_SPACE:
-
-//             if(byte == ' ')
-//                 state = GOT_SPACE;
-//             else if
-
-
-
-//         default:
-//         break
-
-//     }
-// }
-
 void uart0_buffer_to_cfifo_transfer(void)
 {
     uint8_t *pdata = buffer0.data; //TODO:use params
@@ -283,55 +157,6 @@ void uart0_buffer_to_cfifo_transfer(void)
     }
 }
 
-void process_cmd(void)
-{
-  uint8_t i;
-  char arg[64];
-  char byte = 0;
-  uint8_t ret = 0;
-  uint8_t new_arg = 1;
-  char *argv[4];
-  int argc = 0;
-
-  for(i = 0; i < 64; i++)
-  {
-    arg[i] = 0;
-  }
-  i = 0;
-
-  while(!ret)
-  {
-    for(;;)
-    {
-      ret = cfifo_get(&uart0_cfifo, &byte);
-      if(byte == 0x20 || ret)
-      {
-        new_arg = 1;
-        break;
-      }
-      else if(new_arg)
-      {
-        new_arg = 0;
-        argv[argc++] = arg+i;
-        arg[i++] = byte;
-      }
-      else
-        arg[i++] = byte;
-    }
-    arg[i++] = 0;
-  }
-  i = 0;
-
-  while(cmds[i].name)
-  {
-    if(!cstrcmp(argv[0], cmds[i].name))
-    {
-      ret = cmds[i].fnc(argc,argv);
-      break;
-    }
-    i++;
-  }
-}
 
 void UART0_Handler(void)
 {
