@@ -19,7 +19,7 @@ int cstrcmp(const char *s1, const char *s2)
     	len--;
     }
 
-    if( !(len) )
+    if(!len)
     {
     	while(*s1)
     	{

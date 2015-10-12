@@ -3,8 +3,6 @@
 #include "vars.h"
 #include "uart.h"
 #include "cstr.h"
-#include "cfifo.h"
-
 
 vars_t vars[3] = { {"v0", 26, &vars[0].data},
                    {"v1", 16, &vars[1].data},
@@ -17,11 +15,6 @@ cmd_t cmds[6] = {
                   {"get", "print value of target variable.", cmd_get},
                   {"set", "set value of target variable.", cmd_help},
                   {0,0,0}};
-
-
-static cfifo_t uart0_cfifo;
-static buffer_t buffer0;
-
 
 uint8_t cmd_help(int argc, char **argv)
 {
@@ -90,7 +83,7 @@ uint8_t cmd_ls(int argc, char **argv)
   return 0;
 }
 
-void process_cmd(void)
+void process_cmd(cfifo_t *cf)
 {
   uint8_t i;
   char arg[64];
@@ -110,7 +103,7 @@ void process_cmd(void)
   {
     for(;;)
     {
-      ret = cfifo_get(&uart0_cfifo, &byte);
+      ret = cfifo_get(cf, &byte);
       if(byte == 0x20 || ret)
       {
         new_arg = 1;

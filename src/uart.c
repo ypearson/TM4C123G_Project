@@ -113,7 +113,7 @@ void uart0_consume_incoming_data(void) // change to switch or small statemachine
       if(char_count)
       {
         uart0_buffer_to_cfifo_transfer();
-        process_cmd();
+        process_cmd(&uart0_cfifo);
         uart0_newline();
         uart0_prompt();
       }
