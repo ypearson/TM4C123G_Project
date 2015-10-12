@@ -13,15 +13,14 @@ SRCFOLDER=src
 CSRC=main.c \
 	 pll.c \
 	 systick.c \
-	 uart.c \
      i2c.c \
      gpio.c \
      hih6130.c \
      cfifo.c \
-     ascii_helpers.c \
      cstr.c \
-     cmds.c \
      vars.c \
+     led.c \
+     button.c \
 
 
 CSRC:=$(addprefix $(SRCFOLDER)/, $(CSRC))
