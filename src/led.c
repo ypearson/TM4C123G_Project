@@ -32,6 +32,36 @@ void led_init(void)
     leds.blue->off();
 }
 
+uint8_t led_green_toggle(void)
+{
+    if(leds.green->state)
+        leds.green->off();
+    else
+        leds.green->on();
+
+    return leds.green->state;
+}
+
+uint8_t led_red_toggle(void)
+{
+    if(leds.red->state)
+        leds.red->off();
+    else
+        leds.red->on();
+
+    return leds.red->state;
+}
+
+uint8_t led_blue_toggle(void)
+{
+    if(leds.blue->state)
+        leds.blue->off();
+    else
+        leds.blue->on();
+
+    return leds.blue->state;
+}
+
 void led_green_on(void)
 {
     green.state = led_turn_on(GREEN_LED);

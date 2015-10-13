@@ -27,7 +27,14 @@ void    gpio_porta_init(void);
 void    gpio_porta_set(uint8_t pin, uint8_t level);
 uint8_t gpio_porta_get(uint8_t pin);
 
-void gpio_portf_init(void);
-void gpio_portf_set(uint8_t pin, uint8_t level);
+void    gpio_portf_init(void);
+void    gpio_portf_set(uint8_t pin, uint8_t level);
+uint8_t gpio_portf_get(uint8_t pin);
+void    gpio_portf_setup_int(void);
+void    gpio_portf_enable_int(uint8_t gpio);
+void    gpio_portf_disable_int(uint8_t gpio);
+
+uint8_t get_sw1(void);
+uint8_t get_sw2(void);
 
 #endif

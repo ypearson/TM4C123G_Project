@@ -35,6 +35,11 @@ typedef struct
 	led_t *blue;
 } leds_t;
 
+
+uint8_t led_green_toggle(void);
+uint8_t led_red_toggle(void);
+uint8_t led_blue_toggle(void);
+
 void    led_init(void);
 void    led_green_on(void);
 void    led_green_off(void);

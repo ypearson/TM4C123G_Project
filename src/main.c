@@ -15,13 +15,17 @@ int main(void)
     pll_init();
 
     gpio_porta_init();
-
     led_init();
+
+    button_init();
 
     //uart0_start();
 
-    systick_init(200000);
-    systick_enable_int();
+    systick_init(500000);
+
+    //systick_enable_int();
+    //systick_disable_int();
+    //systick_enable_int();
 
     enableInterrupts();
 

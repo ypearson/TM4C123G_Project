@@ -18,6 +18,7 @@ typedef struct
 {
 	button_state_t state;
 	void (*trigger)(void);
+	uint8_t (*get)(void);
 } push_button_t;
 
 typedef struct
@@ -31,6 +32,7 @@ void button_init(void);
 void button_action(uint8_t button);
 void button_action_sw1(void);
 void button_action_sw2(void);
+void debounce(uint8_t sw);
 
 static push_button_t sw1;
 static push_button_t sw2;

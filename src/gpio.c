@@ -77,6 +77,10 @@ void gpio_portf_init(void)
     GPIO_PORTF_PCTL_R  &=  ~( PF1 | PF2 | PF3 | SW2 | SW1 );
     GPIO_PORTF_AMSEL_R &=  ~( PF1 | PF2 | PF3 | SW2 | SW1 );
     GPIO_PORTF_DEN_R   |=   ( PF1 | PF2 | PF3 | SW2 | SW1 );
+
+    GPIO_PORTF_PUR_R   |=  ( SW1 | SW2 );
+
+    gpio_portf_setup_int();
 }
 
 void gpio_portf_set(uint8_t pin, uint8_t level)
@@ -107,4 +111,62 @@ void gpio_portf_set(uint8_t pin, uint8_t level)
         default:
         break;
     }
+}
+
+uint8_t get_sw1(void)
+{
+    return gpio_portf_get(SW1);
+}
+
+uint8_t get_sw2(void)
+{
+    return gpio_portf_get(SW2);
+}
+
+
+uint8_t gpio_portf_get(uint8_t pin)
+{
+    uint8_t state = 1;
+
+    switch(pin)
+    {
+        case PF4:
+            state = ( GPIO_PORTF_DATA_R & PF4 );
+        break;
+
+        case PF0:
+           state = ( GPIO_PORTF_DATA_R & PF0 );
+        break;
+
+        default:
+        break;
+    }
+
+    return (!state) ? 1 : 0;
+}
+
+void gpio_portf_setup_int(void)
+{
+    // Edge trigger
+    GPIO_PORTF_IS_R   &= ~( PF0 | PF4 );
+    // One edge trigger
+    GPIO_PORTF_IBE_R  &= ~( PF0 | PF4 );
+    // Falling edge
+    GPIO_PORTF_IEV_R  &= ~( PF0 | PF4 );
+    // Set interrupt
+    GPIO_PORTF_IM_R  |=   ( PF0 | PF4 );
+
+    NVIC_EN0_R  |= (1 << (INT_GPIOF-16));
+    NVIC_PRI7_R |= NVIC_PRI7_INT30_M;
+
+}
+void gpio_portf_enable_int(uint8_t gpio)
+{
+    GPIO_PORTF_IM_R  |=   (gpio);
+
+}
+void gpio_portf_disable_int(uint8_t gpio)
+{
+    GPIO_PORTF_IM_R  &=  ~(gpio);
+
 }

@@ -5,6 +5,8 @@
 #include "gpio.h"
 #include "hih6130.h"
 #include "uart.h"
+#include "button.h"
+#include "led.h"
 
 static uint8_t toggle = 0;
 
@@ -26,5 +28,10 @@ void systick_disable_int(void)
 
 void SysTick_Handler(void)
 {
+	debounce(SW1);
+	debounce(SW2);
+
+
+	//led_green_toggle();
 
 }
