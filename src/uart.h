@@ -4,10 +4,6 @@
 #include "ctypes.h"
 #include "ascii_helpers.h"
 
-#define PA1 (1<<1)
-#define PA0 (1<<0)
-
-
 void uart0_init(void);
 void uart0_put_byte(uint8_t data);
 void uart0_put_string(char *str);

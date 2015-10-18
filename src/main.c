@@ -19,19 +19,13 @@ int main(void)
 
     button_init();
 
-    //uart0_start();
-
-    systick_init(500000);
-
-    //systick_enable_int();
-    //systick_disable_int();
-    //systick_enable_int();
+    systick_init(5000);
+    systick_enable_int();
 
     enableInterrupts();
 
     for(;;)
     {
-    	//uart0_consume_incoming_data();
 
     }
 

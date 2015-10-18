@@ -155,7 +155,8 @@ void gpio_portf_setup_int(void)
     GPIO_PORTF_IM_R  |=   ( PF0 | PF4 );
 
     NVIC_EN0_R  |= (1 << (INT_GPIOF-16));
-    NVIC_PRI7_R |= NVIC_PRI7_INT30_M;
+    //NVIC_PRI7_R |= NVIC_PRI7_INT30_M;
+    NVIC_PRI7_R |= 0x00C00000; // priority 6
 }
 
 void gpio_portf_clear_int(uint8_t gpio)
