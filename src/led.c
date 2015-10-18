@@ -1,35 +1,28 @@
 #include "gpio.h"
 #include "led.h"
 
-
 void led_init(void)
 {
     gpio_portf_init();
 
-    green.state = OFF;
-    green.on = led_green_on;
-    green.off = led_green_off;
+    green.state  = OFF;
+    green.on     = led_green_on;
+    green.off    = led_green_off;
+    green.toggle = led_green_toggle;
 
-    red.state = OFF;
-    red.on = led_red_on;
-    red.off = led_red_off;
+    red.state  = OFF;
+    red.on     = led_red_on;
+    red.off    = led_red_off;
+    red.toggle = led_red_toggle;
 
-    blue.state = OFF;
-    blue.on = led_blue_on;
-    blue.off = led_blue_off;
+    blue.state  = OFF;
+    blue.on     = led_blue_on;
+    blue.off    = led_blue_off;
+    blue.toggle = led_blue_toggle;
 
     leds.green = &green;
     leds.red   = &red;
     leds.blue  = &blue;
-
-    leds.green->on();
-    leds.green->off();
-
-    leds.red->on();
-    leds.red->off();
-
-    leds.blue->on();
-    leds.blue->off();
 }
 
 uint8_t led_green_toggle(void)

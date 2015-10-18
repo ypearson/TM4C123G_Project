@@ -63,7 +63,6 @@ uint8_t gpio_porta_get(uint8_t pin)
 void gpio_portf_init(void)
 {
     volatile uint32_t delay;
-    //SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0; // This will cause a Hard Fault
     SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOF;
     delay = SYSCTL_RCGC2_R;
 
@@ -72,13 +71,13 @@ void gpio_portf_init(void)
     GPIO_PORTF_CR_R  |= PF0;
 
     GPIO_PORTF_DIR_R   |=   ( PF1 | PF2 | PF3 );
-    GPIO_PORTF_DIR_R   &=  ~( SW1 | SW2 );
-    GPIO_PORTF_AFSEL_R &=  ~( PF1 | PF2 | PF3 | SW2 | SW1 );
-    GPIO_PORTF_PCTL_R  &=  ~( PF1 | PF2 | PF3 | SW2 | SW1 );
-    GPIO_PORTF_AMSEL_R &=  ~( PF1 | PF2 | PF3 | SW2 | SW1 );
-    GPIO_PORTF_DEN_R   |=   ( PF1 | PF2 | PF3 | SW2 | SW1 );
+    GPIO_PORTF_DIR_R   &=  ~( PF4 | PF0 );
+    GPIO_PORTF_AFSEL_R &=  ~( PF1 | PF2 | PF3 | PF4 | PF0 );
+    GPIO_PORTF_PCTL_R  &=  ~( PF1 | PF2 | PF3 | PF4 | PF0 );
+    GPIO_PORTF_AMSEL_R &=  ~( PF1 | PF2 | PF3 | PF4 | PF0 );
+    GPIO_PORTF_DEN_R   |=   ( PF1 | PF2 | PF3 | PF4 | PF0 );
 
-    GPIO_PORTF_PUR_R   |=  ( SW1 | SW2 );
+    GPIO_PORTF_PUR_R   |=  ( PF4 | PF0 );
 
     gpio_portf_setup_int();
 }
@@ -113,16 +112,15 @@ void gpio_portf_set(uint8_t pin, uint8_t level)
     }
 }
 
-uint8_t get_sw1(void)
+uint8_t gpio_get_pf4(void)
 {
-    return gpio_portf_get(SW1);
+    return gpio_portf_get(PF4);
 }
 
-uint8_t get_sw2(void)
+uint8_t gpio_get_pf0(void)
 {
-    return gpio_portf_get(SW2);
+    return gpio_portf_get(PF0);
 }
-
 
 uint8_t gpio_portf_get(uint8_t pin)
 {
@@ -153,20 +151,27 @@ void gpio_portf_setup_int(void)
     GPIO_PORTF_IBE_R  &= ~( PF0 | PF4 );
     // Falling edge
     GPIO_PORTF_IEV_R  &= ~( PF0 | PF4 );
-    // Set interrupt
+    // Enable interrupt
     GPIO_PORTF_IM_R  |=   ( PF0 | PF4 );
 
     NVIC_EN0_R  |= (1 << (INT_GPIOF-16));
     NVIC_PRI7_R |= NVIC_PRI7_INT30_M;
-
 }
+
+void gpio_portf_clear_int(uint8_t gpio)
+{
+    GPIO_PORTF_ICR_R = (gpio);
+}
+
 void gpio_portf_enable_int(uint8_t gpio)
 {
-    GPIO_PORTF_IM_R  |=   (gpio);
+    gpio_portf_clear_int(gpio);
 
+    GPIO_PORTF_IM_R  |=   (gpio);
 }
+
 void gpio_portf_disable_int(uint8_t gpio)
 {
     GPIO_PORTF_IM_R  &=  ~(gpio);
-
 }
+

@@ -3,26 +3,18 @@
 
 #include "ctypes.h"
 
-#define PF0 (1<<0)
-#define PF1 (1<<1)
-#define PF2 (1<<2)
-#define PF3 (1<<3)
-#define PF4 (1<<4)
-
-#define SW1 PF4
-#define SW2 PF0
-
 #define RED_LED   PF1
 #define BLUE_LED  PF2
 #define GREEN_LED PF3
 
-typedef enum {OFF, ON} state_t;
+typedef enum {OFF, ON} led_state_t;
 
 typedef struct
 {
-	state_t state;
-	void (*on)(void);
-	void (*off)(void);
+	led_state_t state;
+	void    (*on)(void);
+	void    (*off)(void);
+	uint8_t (*toggle)(void);
 } led_t;
 
 typedef struct
@@ -34,7 +26,6 @@ typedef struct
 	led_t *white;
 	led_t *blue;
 } leds_t;
-
 
 uint8_t led_green_toggle(void);
 uint8_t led_red_toggle(void);
@@ -53,7 +44,7 @@ uint8_t led_turn_off(uint8_t led);
 static led_t green;
 static led_t red;
 static led_t blue;
-static leds_t leds;
 
+static leds_t leds;
 
 #endif

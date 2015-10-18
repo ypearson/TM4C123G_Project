@@ -28,10 +28,6 @@ void systick_disable_int(void)
 
 void SysTick_Handler(void)
 {
-	debounce(SW1);
-	debounce(SW2);
-
-
-	//led_green_toggle();
-
+	button_handler(SW1);
+	button_handler(SW2);
 }

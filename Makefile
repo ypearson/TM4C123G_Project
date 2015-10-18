@@ -13,9 +13,7 @@ SRCFOLDER=src
 CSRC=main.c \
 	 pll.c \
 	 systick.c \
-     i2c.c \
      gpio.c \
-     hih6130.c \
      cfifo.c \
      cstr.c \
      vars.c \
