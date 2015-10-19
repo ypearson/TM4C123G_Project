@@ -166,12 +166,14 @@ void GPIOPortF_Handler(void)
         gpio_portf_disable_int(SW1);
         gpio_portf_clear_int(SW1);
         sw1.state = PRESSED; // replace with messege queue
+        mqueue_put(&application_mq, MSG_BUTTON_PRESS_SW1);
     }
     else if(GPIO_PORTF_MIS_R & SW2)
     {
         gpio_portf_disable_int(SW2);
         gpio_portf_clear_int(SW2);
         sw2.state = PRESSED; // replace with messege queue
+        mqueue_put(&application_mq, MSG_BUTTON_PRESS_SW2);
     }
     else
     {

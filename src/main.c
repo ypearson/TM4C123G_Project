@@ -15,6 +15,8 @@ int main(void)
 {
     pll_init();
 
+    app_handler_init();
+
     gpio_porta_init();
 
     led_init();
