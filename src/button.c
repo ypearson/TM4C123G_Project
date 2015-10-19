@@ -2,34 +2,34 @@
 #include "gpio.h"
 #include "button.h"
 #include "led.h"
-#include "systick.h"
+#include "timer.h"
 
 void button_init(void)
 {
-    sw1.self    = SW1;
+    sw1.self      = SW1;
     sw1.timestamp = 0;
-    sw1.dtime   = 100;
-    sw1.state   = NOT_PRESSED;
-    sw1.trigger = button_action_sw1;
-    sw1.get     = button_get_state_sw1;
-    sw1.enable  = button_enable;
-    sw1.disable = button_disable;
+    sw1.dtime     = 100;
+    sw1.state     = NOT_PRESSED;
+    sw1.trigger   = button_action_sw1;
+    sw1.get       = button_get_state_sw1;
+    sw1.enable    = button_enable;
+    sw1.disable   = button_disable;
 
-    sw2.self    = SW2;
+    sw2.self      = SW2;
     sw2.timestamp = 0;
-    sw2.dtime   = 100;
-    sw2.state   = NOT_PRESSED;
-    sw2.trigger = button_action_sw2;
-    sw2.get     = button_get_state_sw2;
-    sw2.enable  = button_enable;
-    sw2.disable = button_disable;
+    sw2.dtime     = 100;
+    sw2.state     = NOT_PRESSED;
+    sw2.trigger   = button_action_sw2;
+    sw2.get       = button_get_state_sw2;
+    sw2.enable    = button_enable;
+    sw2.disable   = button_disable;
 
     buttons.sw[0]   = & sw1;
     buttons.sw[1]   = & sw2;
     buttons.sw[2]   = 0;
     buttons.sw[3]   = 0;
 
-    buttons.handler = button_handler;
+    //buttons.handler = button_handler;
 }
 
 void button_action(uint8_t button)
@@ -49,48 +49,12 @@ void button_action(uint8_t button)
     }
 }
 
-void button_handler(uint8_t sw)
-{
-    uint8_t state = 0;
-
-    systick_disable_int(); //bug here
-
-    switch(sw)
-    {
-        case SW1:
-        if(sw1.state == PRESSED)
-        {
-            state = sw1.get();
-            if(state)
-                sw1.trigger();
-
-            sw1.state = NOT_PRESSED;
-            sw1.enable(sw1.self);
-        }
-        break;
-
-        case SW2:
-        if(sw2.state == PRESSED)
-        {
-            state = sw2.get();
-            if(state)
-                sw2.trigger();
-
-            sw2.state = NOT_PRESSED;
-            sw2.enable(sw2.self);
-        }
-        break;
-
-        default:
-        break;
-    }
-}
-void button_handler1(push_buttons_t *btn)
+void button_handler(push_buttons_t *b)
 {
     uint8_t i = 1;
     uint8_t state = 0;
     uint32_t dt = 0;
-    push_button_t *pb = btn->sw[0];
+    push_button_t *pb = b->sw[0];
 
     while(pb)
     {
@@ -113,7 +77,7 @@ void button_handler1(push_buttons_t *btn)
                 pb->enable(pb->self);
              }
         }
-        pb = btn->sw[i++];
+        pb = b->sw[i++];
     }
 }
 

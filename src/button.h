@@ -10,14 +10,15 @@ typedef enum {NOT_PRESSED, PRESSED, DEBOUNCE} button_state_t;
 
 typedef struct
 {
-	button_state_t state;
-	uint32_t timestamp;
-	uint32_t dtime;
 	uint8_t self;
 	uint8_t (*get)     (void);
 	void    (*trigger) (void);
 	void    (*enable)  (uint8_t);
 	void    (*disable) (uint8_t);
+	button_state_t state;
+	uint32_t timestamp;
+	uint32_t dtime;
+
 } push_button_t;
 
 typedef struct
@@ -30,8 +31,7 @@ void button_init(void);
 void button_action(uint8_t button);
 void button_action_sw1(void);
 void button_action_sw2(void);
-void button_handler(uint8_t sw);
-void button_handler1(push_buttons_t *btn);
+void button_handler(push_buttons_t *btn);
 
 uint8_t button_get_state(uint8_t sw);
 uint8_t button_get_state_sw1(void);

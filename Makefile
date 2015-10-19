@@ -19,6 +19,7 @@ CSRC=main.c \
      vars.c \
      led.c \
      button.c \
+     timer.c \
 
 
 CSRC:=$(addprefix $(SRCFOLDER)/, $(CSRC))
