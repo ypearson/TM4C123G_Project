@@ -11,10 +11,11 @@
 
 
 typedef mqueue_t cfifo_t;
+typedef msg_t    uint8_t;
 
 void    mqueue_init(mqueue_t *mq);
-uint8_t mqueue_put (mqueue_t *mq, uint8_t *val);
-uint8_t mqueue_get (mqueue_t *mq, uint8_t *val);
+uint8_t mqueue_put (mqueue_t *mq, msg_t *msg);
+uint8_t mqueue_get (mqueue_t *mq, msg_t *msg);
 uint8_t mqueue_cnt (mqueue_t *mq);
 
 //mqueue_t application_mq;
