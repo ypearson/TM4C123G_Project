@@ -32,7 +32,7 @@ int main(void)
 
     for(;;)
     {
-
+        app_handler_run();
     }
 
     return 0;

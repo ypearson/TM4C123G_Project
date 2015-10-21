@@ -3,12 +3,13 @@
 #include "button.h"
 #include "led.h"
 #include "timer.h"
+#include "mqueue.h"
 
 void button_init(void)
 {
     sw1.self      = SW1;
     sw1.timestamp = 0;
-    sw1.dtime     = 100;
+    sw1.dtime     = 2000;
     sw1.state     = NOT_PRESSED;
     sw1.trigger   = button_action_sw1;
     sw1.get       = button_get_state_sw1;
@@ -17,7 +18,7 @@ void button_init(void)
 
     sw2.self      = SW2;
     sw2.timestamp = 0;
-    sw2.dtime     = 100;
+    sw2.dtime     = 2000;
     sw2.state     = NOT_PRESSED;
     sw2.trigger   = button_action_sw2;
     sw2.get       = button_get_state_sw2;
@@ -54,7 +55,7 @@ void button_handler(push_buttons_t *b)
     uint8_t i = 1;
     uint8_t state = 0;
     uint32_t dt = 0;
-    push_button_t *pb = b->sw[0];
+    push_button_t *pb = *(b->sw);
 
     while(pb)
     {
@@ -161,19 +162,21 @@ void button_disable(uint8_t sw)
 
 void GPIOPortF_Handler(void)
 {
+    msg_t msg;
+
     if(GPIO_PORTF_MIS_R & SW1)
     {
         gpio_portf_disable_int(SW1);
         gpio_portf_clear_int(SW1);
-        sw1.state = PRESSED; // replace with messege queue
-        mqueue_put(&application_mq, MSG_BUTTON_PRESS_SW1);
+        msg = MSG_BUTTON_PRESS_SW1;
+        mqueue_put(&application_mq, &msg);
     }
     else if(GPIO_PORTF_MIS_R & SW2)
     {
         gpio_portf_disable_int(SW2);
         gpio_portf_clear_int(SW2);
-        sw2.state = PRESSED; // replace with messege queue
-        mqueue_put(&application_mq, MSG_BUTTON_PRESS_SW2);
+        msg = MSG_BUTTON_PRESS_SW2;
+        mqueue_put(&application_mq, &msg);
     }
     else
     {

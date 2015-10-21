@@ -42,6 +42,7 @@ void button_disable(uint8_t sw);
 
 static push_button_t sw1;
 static push_button_t sw2;
+
 push_buttons_t buttons;
 
 #endif

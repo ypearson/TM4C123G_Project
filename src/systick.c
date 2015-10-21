@@ -1,14 +1,7 @@
 #include "tm4c123gh6pm.h"
 #include "systick.h"
-#include "adc.h"
-#include "i2c.h"
-#include "gpio.h"
-#include "uart.h"
 #include "button.h"
-#include "led.h"
 #include "timer.h"
-
-static uint8_t toggle = 0;
 
 void systick_init(unsigned long period)
 {

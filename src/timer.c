@@ -9,14 +9,7 @@ void timer_init(void)
 
 uint32_t timer_elasped(uint32_t t0, uint32_t t1)
 {
-	uint32_t delta = 0;
-
-	if( t1 >= t0 )
-		delta = t1 - t0;
-	else
-		delta = t0 - t1;
-
-	return delta;
+	return (t1 >= t0) ? (t1 - t0) : (t0 - t1);
 }
 
 void timer_tick(void)
