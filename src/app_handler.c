@@ -13,7 +13,6 @@ void app_handler_init(void)
 void app_handler_run(void)
 {
     msg_t msg = 0;
-    void *obj;
 
     if(mqueue_cnt(&application_mq))
     {
@@ -22,14 +21,10 @@ void app_handler_run(void)
         switch(msg)
         {
             case MSG_BUTTON_PRESS_SW1:
-            obj = app.bt->sw[0];
-            ((push_button_t*)obj)->state = PRESSED;
             button_handler(app.bt);
             break;
 
             case MSG_BUTTON_PRESS_SW2:
-            obj = app.bt->sw[1];
-            ((push_button_t*)obj)->state = PRESSED;
             button_handler(app.bt);
             break;
 

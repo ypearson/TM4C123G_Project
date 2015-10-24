@@ -11,12 +11,11 @@ typedef struct
 	mqueue_t       *mq;
 	leds_t         *leds;
 	push_buttons_t *bt;
-
 } application_t;
 
 void app_handler_init(void);
 void app_handler_run(void);
 
-static application_t app;
+static volatile application_t app;
 
 #endif

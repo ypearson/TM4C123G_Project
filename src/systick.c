@@ -5,7 +5,7 @@
 
 void systick_init(unsigned long period)
 {
-  NVIC_ST_RELOAD_R = 0xFFFFF & period;
+  NVIC_ST_RELOAD_R = 0xFFFFFF & period;
   NVIC_ST_CURRENT_R = 0;
 }
 
@@ -21,7 +21,8 @@ void systick_disable_int(void)
 
 void SysTick_Handler(void)
 {
-	timer_tick();
+    timer_tick();
 
-	button_handler(&buttons);
+    app_handler_run();
+
 }

@@ -25,14 +25,14 @@ int main(void)
 
     timer_init();
 
-    systick_init(5000);
+    systick_init(10000);
+
     systick_enable_int();
 
     enableInterrupts();
 
     for(;;)
     {
-        app_handler_run();
     }
 
     return 0;

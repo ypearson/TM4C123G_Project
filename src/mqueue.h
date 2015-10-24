@@ -9,7 +9,7 @@
 #define MSG_02 0x03
 #define MSG_03 0x04
 
-typedef cfifo_t mqueue_t;
+typedef volatile cfifo_t mqueue_t;
 typedef uint8_t msg_t;
 
 void    mqueue_init(mqueue_t *mq);

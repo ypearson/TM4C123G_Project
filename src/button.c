@@ -9,28 +9,28 @@ void button_init(void)
 {
     sw1.self      = SW1;
     sw1.timestamp = 0;
-    sw1.dtime     = 2000;
+    sw1.dtime     = 80;
     sw1.state     = NOT_PRESSED;
     sw1.trigger   = button_action_sw1;
     sw1.get       = button_get_state_sw1;
     sw1.enable    = button_enable;
     sw1.disable   = button_disable;
+    sw1.msg       = MSG_BUTTON_PRESS_SW1;
 
     sw2.self      = SW2;
     sw2.timestamp = 0;
-    sw2.dtime     = 2000;
+    sw2.dtime     = 80;
     sw2.state     = NOT_PRESSED;
     sw2.trigger   = button_action_sw2;
     sw2.get       = button_get_state_sw2;
     sw2.enable    = button_enable;
     sw2.disable   = button_disable;
+    sw2.msg       = MSG_BUTTON_PRESS_SW2;
 
     buttons.sw[0]   = & sw1;
     buttons.sw[1]   = & sw2;
     buttons.sw[2]   = 0;
     buttons.sw[3]   = 0;
-
-    //buttons.handler = button_handler;
 }
 
 void button_action(uint8_t button)
@@ -63,6 +63,7 @@ void button_handler(push_buttons_t *b)
         {
             pb->timestamp = timer_get_time();
             pb->state = DEBOUNCE;
+            mqueue_put(&application_mq, &pb->msg);
         }
         else if(pb->state == DEBOUNCE)
         {
@@ -76,6 +77,10 @@ void button_handler(push_buttons_t *b)
                 pb->timestamp = 0;
                 pb->state = NOT_PRESSED;
                 pb->enable(pb->self);
+             }
+             else
+             {
+                mqueue_put(&application_mq, &pb->msg);
              }
         }
         pb = b->sw[i++];
@@ -168,6 +173,7 @@ void GPIOPortF_Handler(void)
     {
         gpio_portf_disable_int(SW1);
         gpio_portf_clear_int(SW1);
+        sw1.state = PRESSED;
         msg = MSG_BUTTON_PRESS_SW1;
         mqueue_put(&application_mq, &msg);
     }
@@ -175,6 +181,7 @@ void GPIOPortF_Handler(void)
     {
         gpio_portf_disable_int(SW2);
         gpio_portf_clear_int(SW2);
+        sw2.state = PRESSED;
         msg = MSG_BUTTON_PRESS_SW2;
         mqueue_put(&application_mq, &msg);
     }

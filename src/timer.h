@@ -16,6 +16,6 @@ void     timer_tick(void);
 uint32_t timer_get_time(void);
 uint32_t timer_elasped(uint32_t t0, uint32_t t1);
 
-timer_t timer;
+volatile timer_t timer;
 
 #endif
