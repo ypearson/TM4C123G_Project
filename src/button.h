@@ -28,7 +28,7 @@ typedef struct
 {
 	push_button_t   *sw[4];
 	void (*handler) (uint8_t);
-} volatile push_buttons_t;
+} push_buttons_t;
 
 void button_init(void);
 void button_action(uint8_t button);
@@ -43,9 +43,6 @@ uint8_t button_get_state_sw2(void);
 void button_enable(uint8_t sw);
 void button_disable(uint8_t sw);
 
-static volatile push_button_t sw1;
-static volatile push_button_t sw2;
-
-volatile push_buttons_t buttons;
+push_buttons_t buttons;
 
 #endif

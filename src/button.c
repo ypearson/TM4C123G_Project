@@ -5,6 +5,10 @@
 #include "timer.h"
 #include "mqueue.h"
 
+static push_button_t sw1;
+static push_button_t sw2;
+
+
 void button_init(void)
 {
     sw1.self      = SW1;

@@ -41,10 +41,4 @@ void    led_blue_off(void);
 uint8_t led_turn_on(uint8_t led);
 uint8_t led_turn_off(uint8_t led);
 
-static led_t green;
-static led_t red;
-static led_t blue;
-
-static leds_t leds;
-
 #endif

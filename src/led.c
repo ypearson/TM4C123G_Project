@@ -1,6 +1,12 @@
 #include "gpio.h"
 #include "led.h"
 
+static led_t green;
+static led_t red;
+static led_t blue;
+
+static leds_t leds;
+
 void led_init(void)
 {
     gpio_portf_init();

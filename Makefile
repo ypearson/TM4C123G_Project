@@ -22,6 +22,10 @@ CSRC=main.c \
      timer.c \
      mqueue.c \
      app_handler.c \
+     uart.c \
+     ascii_helpers.c \
+     cmds.c \
+
 
 
 CSRC:=$(addprefix $(SRCFOLDER)/, $(CSRC))

@@ -171,4 +171,14 @@ uint8_t cfifo_cnt(cfifo_t *cf)
     return cf->cnt;
 }
 
+void cfifo_to_cfifo_transfer(cfifo_t *scf, cfifo_t *dcf)
+{
+    uint8_t val;
+
+    while(cfifo_cnt(scf))
+    {
+        cfifo_get(scf, &val);
+        cfifo_put(dcf, &val);
+    }
+}
 

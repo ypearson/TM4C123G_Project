@@ -40,7 +40,10 @@ int cstrcmp(const char *s1, const char *s2)
     return res;
 }
 
-// void memset(void *s, int c, int sz)
-// {
+void memclear(uint8_t *pd, uint8_t sz)
+{
+    uint8_t i;
 
-// }
+    for(i = 0; i < sz; i++)
+        *(pd+i) = 0;
+}

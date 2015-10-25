@@ -5,8 +5,6 @@
 #include "cmds.h"
 #include "vars.h"
 
-static uint8_t char_count = 0;
-
 const char* BACKSPACE = "\x8\x20\x8";
 const char* NEWLINE   = "\r\n";
 const char* SPACES = "    ";
@@ -14,45 +12,44 @@ const char* PROMPT   = "es>";
 const char* ERROR   = "error\r\n";
 const char* HEX   = "  0x";
 
-static buffer_t buffer0;
-static cfifo_t uart0_cfifo;
+static cfifo_t  uart0_cf;
+static cfifo_t  user_cf;
+static uart_t   uart0;
+
+void uart_init(void)
+{
+    cfifo_init(&uart0_cf);
+    cfifo_init(&user_cf);
+
+    uart0.cf    = &uart0_cf;
+    uart0.init  = uart0_init;
+    uart0.print = uart0_print;
+}
 
 void uart0_init(void)
 {
-  SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART0; // activate UART0
-  SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOA; // activate port A
+  SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART0;    // activate UART0
+  SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOA;    // activate port A
   UART0_CTL_R    &= ~UART_CTL_UARTEN;      // disable UART
   UART0_IBRD_R    = 43;                    // IBRD = int(80,000,000 / (16 * 115200)) = int(43.402778)
   UART0_FBRD_R    = 26;                    // FBRD = round(0.402778 * 64) = 26
-                                        // 8 bit word length (no parity bits, one stop bit, FIFOs)
+                                           // 8 bit word length (no parity bits, one stop bit, FIFOs)
   UART0_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
 
   UART0_IFLS_R = (UART_IFLS_RX1_8 | UART_IFLS_TX1_8); // Interrupt trigger FIFO level
   UART0_IM_R   = UART_IM_RXIM;           // Enable RX interrupt
-  UART0_CTL_R |= UART_CTL_UARTEN;       // enable UART
+  UART0_CTL_R |= UART_CTL_UARTEN;        // enable UART
 
-  GPIO_PORTA_AFSEL_R |= 0x03;           // enable alt funct on PA1,PA0
+  GPIO_PORTA_AFSEL_R |= 0x03;            // enable alt funct on PA1,PA0
   GPIO_PORTA_DEN_R   |= 0x03;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // enable digital I/O on PA1,PA0
-                                        // configure PA1,PA0 as UART0
+                                         // configure PA1,PA0 as UART0
   GPIO_PORTA_PCTL_R   = (GPIO_PORTA_PCTL_R & 0xFFFFFF00) + 0x00000011;
-  GPIO_PORTA_AMSEL_R &= ~0x03;          // disable analog functionality on PA1,PA0
-}
-
-void uart0_start(void)
-{
-    cfifo_init( &uart0_cfifo);
-    buffer_init( &buffer0, bSZ);
-    uart0_init();
-    uart0_newline();
-    uart0_put_string("# embedded shell\r\n");
-    uart0_prompt();
+  GPIO_PORTA_AMSEL_R &= ~0x03;           // disable analog functionality on PA1,PA0
 }
 
 void uart0_enable_int(void)
 {
-  // p.104 UART INT# 5
-  //NVIC_EN0_R |= ( 1 << ( INT_UART0 - 16) );
-  NVIC_EN0_R |= (1<<5);
+  NVIC_EN0_R |= ( 1 << ( INT_UART0 - 16) );
   NVIC_PRI1_R = NVIC_PRI1_INT5_M;
 }
 
@@ -62,44 +59,56 @@ void uart0_put_byte(uint8_t data)
   UART0_DR_R = data;
 }
 
-void uart0_put_string(char *str)
+void uart0_print(cfifo_t *cf)
 {
-    while(*str)
-    {
-        uart0_put_byte(*str++);
-    }
+  uint8_t val;
+
+  while(cfifo_cnt(&uart0_cf))
+  {
+    cfifo_get(cf, &val);
+    uart0_put_byte(val);
+  }
 }
 
-void uart0_newline(void)
+void uart0_put_string(cfifo_t *cf, const char *str)
 {
-  uart0_put_string(NEWLINE);
-}
-void uart0_backspace(void)
-{
-  uart0_put_string(BACKSPACE);
-}
-void uart0_prompt(void)
-{
- uart0_put_string(PROMPT);
-}
-void uart0_error(void)
-{
- uart0_put_string(ERROR);
-}
-void uart0_hex(void)
-{
- uart0_put_string(HEX);
-}
-void uart0_spaces(void)
-{
- uart0_put_string(SPACES);
+  while(*str)
+  {
+    cfifo_put(cf, (uint8_t*)str++);
+  }
 }
 
+void uart0_newline(cfifo_t *cf)
+{
+    uart0_put_string(cf, NEWLINE);
+}
 
+void uart0_backspace(cfifo_t *cf)
+{
+    uart0_put_string(cf, BACKSPACE);
+}
 
-void uart0_consume_incoming_data(void) // change to switch or small statemachine
+void uart0_prompt(cfifo_t *cf)
+{
+    uart0_put_string(cf, PROMPT);
+}
+void uart0_error(cfifo_t *cf)
+{
+    uart0_put_string(cf, ERROR);
+}
+void uart0_hex(cfifo_t *cf)
+{
+    uart0_put_string(cf, HEX);
+}
+void uart0_spaces(cfifo_t *cf)
+{
+    uart0_put_string(cf, SPACES);
+}
+
+void uart0_cli(void)
 {
   uint8_t byte;
+  uint8_t cnt;
 
   while(! (UART0_FR_R & UART_FR_RXFE) )
   {
@@ -107,56 +116,33 @@ void uart0_consume_incoming_data(void) // change to switch or small statemachine
 
     if(byte == '\r' || byte == 3)
     {
-      uart0_newline();
-      uart0_prompt();
-      buffer0.data[char_count] = 0;
-      if(char_count)
+      cnt = cfifo_cnt(&uart0_cf);
+      if(cnt)
       {
-        uart0_buffer_to_cfifo_transfer();
-        process_cmd(&uart0_cfifo);
-        uart0_newline();
-        uart0_prompt();
+        cfifo_to_cfifo_transfer(&user_cf, &uart0_cf);
+        process_cmd(&uart0_cf);
       }
-      char_count = 0;
-      // while( cfifo_cnt(&uart0_cfifo) ) // test
-      // {
-      //   cfifo_get(&uart0_cfifo, &byte);
-      //   uart0_put_byte(byte);
-      // }
+      uart0_newline(&user_cf);
+      uart0_prompt(&user_cf);
+      uart0_print(&user_cf);
     }
     else if(byte == 0x7F)
     {
-      if(char_count)
+      cnt = cfifo_cnt(&user_cf);
+      if(cnt)
       {
-        uart0_backspace();
-        char_count--;
+        uart0_backspace(&user_cf);
+        uart0_print(&user_cf);
+        cfifo_get(&user_cf, &byte);
       }
     }
     else
     {
-      if( char_count < buffer0.sz - 1)
-      {
         uart0_put_byte(byte);
-        buffer0.data[char_count++] = byte;
-      }
-
+        cfifo_put(&user_cf, &byte);
     }
-    // uint32_to_ascii(&buffer0, byte);
-    // uart0_put_string(buffer0.data);
-
   }
 }
-
-void uart0_buffer_to_cfifo_transfer(void)
-{
-    uint8_t *pdata = buffer0.data; //TODO:use params
-
-    while(*pdata)
-    {
-        cfifo_put(& uart0_cfifo, pdata++);
-    }
-}
-
 
 void UART0_Handler(void)
 {

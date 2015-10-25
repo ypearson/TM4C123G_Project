@@ -2,6 +2,7 @@
 #include "systick.h"
 #include "button.h"
 #include "timer.h"
+#include "app_handler.h"
 
 void systick_init(unsigned long period)
 {
