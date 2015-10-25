@@ -12,12 +12,9 @@
 // SS3 interrupts: enabled but not promoted to controller
 void adc0_init(void)
 {
-    // Module Init
     volatile uint32_t delay;
-
     SYSCTL_RCGCADC_R |= ADC0;
     delay = SYSCTL_RCGCADC_R;
-
     SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOE;
     delay = SYSCTL_RCGC2_R;
 
@@ -37,10 +34,6 @@ void adc0_init(void)
     ADC0_ACTSS_R = ADC_ACTSS_ASEN3;
 }
 
-//------------ADC0_In------------
-// Busy-wait Analog to digital conversion
-// Input: none
-// Output: 12-bit result of ADC conversion
 uint32_t adc0_get_sample(void)
 {
     unsigned long result = 0;
