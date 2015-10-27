@@ -41,12 +41,12 @@ void uint32_to_ascii(cfifo_t *cf, const uint32_t input)
 
 uint64_t uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
 {
+  const uint64_t lessa = 0x30;
+  const uint64_t morea = 0x37;
+  const uint64_t mask = 0xF;
+  const uint64_t nine = 0x9;
   uint64_t input64 = 0;
   uint64_t data[8];
-  uint64_t lessa = 0x30;
-  uint64_t morea = 0x37;
-  uint64_t mask = 0xF;
-  uint64_t nine = 0x9;
   uint8_t i;
   uint8_t val;
 

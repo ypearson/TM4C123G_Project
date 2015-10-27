@@ -7,9 +7,7 @@
 
 const char* BACKSPACE = "\x8\x20\x8";
 const char* NEWLINE   = "\r\n";
-const char* SPACES = "    ";
 const char* PROMPT   = ">";
-const char* ERROR   = "error\r\n";
 const char* HEX   = "  0x";
 
 static cfifo_t  uart0_cf;
@@ -21,13 +19,13 @@ void uart_init(void)
     cfifo_init(&uart0_cf);
     cfifo_init(&user_cf);
 
+    uart0.self  = 0;
     uart0.cf    = &uart0_cf;
     uart0.ucf   = &user_cf;
     uart0.init  = uart0_init;
-    uart0.print = uart0_print;
+    uart0.print = uart_print;
 
-
-
+    uart0.init();
 }
 
 void uart0_init(void)
@@ -57,29 +55,40 @@ void uart0_enable_int(void)
   NVIC_PRI1_R = NVIC_PRI1_INT5_M;
 }
 
-void uart0_put_byte(uint8_t data)
+void uart_put_byte(device_t device, uint8_t data)
 {
-  while( (UART0_FR_R & UART_FR_TXFF) != 0);
-  UART0_DR_R = data;
+    switch(device)
+    {
+        default:
+        while( (UART0_FR_R & UART_FR_TXFF) != 0);
+        UART0_DR_R = data;
+        break;
+    }
 }
 
-void uart0_print(cfifo_t *cf)
+void uart_print(device_t device, cfifo_t *cf)
 {
   uint8_t val;
 
   while(cfifo_cnt(cf))
   {
     cfifo_get(cf, &val);
-    uart0_put_byte(val);
+
+    switch(device)
+    {
+        default:
+        uart_put_byte(device, val);
+        break;
+    }
   }
 }
 
 void uart_put_string(cfifo_t *cf, const char *str)
 {
-  while(*str)
-  {
-    cfifo_put(cf, (uint8_t*)str++);
-  }
+    while(*str)
+    {
+        cfifo_put(cf, (uint8_t*)str++);
+    }
 }
 
 void uart_newline(cfifo_t *cf)
@@ -97,95 +106,47 @@ void uart_prompt(cfifo_t *cf)
     uart_put_string(cf, PROMPT);
 }
 
-void uart_error(cfifo_t *cf)
-{
-    uart_put_string(cf, ERROR);
-}
-
 void uart_hex(cfifo_t *cf)
 {
     uart_put_string(cf, HEX);
 }
 
-void uart_spaces(cfifo_t *cf)
-{
-    uart_put_string(cf, SPACES);
-}
-
-void uart0_cli(void)
+void uart_cli(uart_t *uart)
 {
   uint8_t byte;
   uint8_t cnt;
 
-  while(! (UART0_FR_R & UART_FR_RXFE) )
+  if( !(UART0_FR_R & UART_FR_RXFE) )
   {
     byte = (UART0_DR_R & 0xFF);
+    cnt = cfifo_cnt(uart->ucf);
 
-    if(byte == '\r')
+    switch(byte)
     {
-      cnt = cfifo_cnt(&uart0_cf);
-      if(cnt)
-      {
-        cfifo_to_cfifo_transfer(&user_cf, &uart0_cf);
-        process_cmd(&uart0_cf);
-      }
-      uart_newline(&user_cf);
-      uart_prompt(&user_cf);
-      uart_print(&user_cf);
-    }
-    else if(byte == 0x7F)
-    {
-      cnt = cfifo_cnt(&user_cf);
-      if(cnt)
-      {
-        uart_backspace(&user_cf);
-        uart_print(&user_cf);
-        cfifo_get(&user_cf, &byte);
-      }
-    }
-    else
-    {
-        uart_put_byte(byte);
-        cfifo_put(&user_cf, &byte);
-    }
-  }
-}
+        case '\r':
+        if(cnt)
+        {
+            cfifo_to_cfifo_transfer(uart->ucf, uart->cf);
+            process_cmd(uart->cf);
+        }
+        uart_newline(uart->ucf);
+        uart_prompt(uart->ucf);
+        uart->print(uart->self, uart->ucf);
+        break;
 
-void uart_cli(uart_t *u)
-{
-  uint8_t byte;
-  uint8_t cnt;
+        case 0x7F:
+        if(cnt)
+        {
+            uart_backspace(uart->ucf);
+            uart->print(uart->self, uart->ucf);
+            cfifo_get(uart->ucf, &byte);
+        }
+        break;
 
-  while(! (UART0_FR_R & UART_FR_RXFE) )
-  {
-    byte = (UART0_DR_R & 0xFF);
-
-    cnt = cfifo_cnt(u->cf);
-
-    if(byte == '\r')
-    {
-      if(cnt)
-      {
-        cfifo_to_cfifo_transfer(u->ucf, u->cf);
-        process_cmd(u->cf);
-      }
-      uart_newline(&user_cf);
-      uart_prompt(&user_cf);
-      uart_print(&user_cf);
-    }
-    else if(byte == 0x7F)
-    {
-      if(cnt)
-      {
-        uart_backspace(&user_cf);
-        uart_print(&user_cf);
-        cfifo_get(&user_cf, &byte);
-      }
-    }
-    else
-    {
-        uart_put_byte(byte);
-        cfifo_put(&user_cf, &byte);
+        default:
+        uart_put_byte(uart->self, byte);
+        cfifo_put(uart->ucf, &byte);
+        break;
     }
   }
 }
