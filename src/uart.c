@@ -8,7 +8,7 @@
 const char* BACKSPACE = "\x8\x20\x8";
 const char* NEWLINE   = "\r\n";
 const char* SPACES = "    ";
-const char* PROMPT   = "es>";
+const char* PROMPT   = ">";
 const char* ERROR   = "error\r\n";
 const char* HEX   = "  0x";
 
@@ -22,8 +22,12 @@ void uart_init(void)
     cfifo_init(&user_cf);
 
     uart0.cf    = &uart0_cf;
+    uart0.ucf   = &user_cf;
     uart0.init  = uart0_init;
     uart0.print = uart0_print;
+
+
+
 }
 
 void uart0_init(void)
@@ -63,14 +67,14 @@ void uart0_print(cfifo_t *cf)
 {
   uint8_t val;
 
-  while(cfifo_cnt(&uart0_cf))
+  while(cfifo_cnt(cf))
   {
     cfifo_get(cf, &val);
     uart0_put_byte(val);
   }
 }
 
-void uart0_put_string(cfifo_t *cf, const char *str)
+void uart_put_string(cfifo_t *cf, const char *str)
 {
   while(*str)
   {
@@ -78,31 +82,34 @@ void uart0_put_string(cfifo_t *cf, const char *str)
   }
 }
 
-void uart0_newline(cfifo_t *cf)
+void uart_newline(cfifo_t *cf)
 {
-    uart0_put_string(cf, NEWLINE);
+    uart_put_string(cf, NEWLINE);
 }
 
-void uart0_backspace(cfifo_t *cf)
+void uart_backspace(cfifo_t *cf)
 {
-    uart0_put_string(cf, BACKSPACE);
+    uart_put_string(cf, BACKSPACE);
 }
 
-void uart0_prompt(cfifo_t *cf)
+void uart_prompt(cfifo_t *cf)
 {
-    uart0_put_string(cf, PROMPT);
+    uart_put_string(cf, PROMPT);
 }
-void uart0_error(cfifo_t *cf)
+
+void uart_error(cfifo_t *cf)
 {
-    uart0_put_string(cf, ERROR);
+    uart_put_string(cf, ERROR);
 }
-void uart0_hex(cfifo_t *cf)
+
+void uart_hex(cfifo_t *cf)
 {
-    uart0_put_string(cf, HEX);
+    uart_put_string(cf, HEX);
 }
-void uart0_spaces(cfifo_t *cf)
+
+void uart_spaces(cfifo_t *cf)
 {
-    uart0_put_string(cf, SPACES);
+    uart_put_string(cf, SPACES);
 }
 
 void uart0_cli(void)
@@ -114,7 +121,7 @@ void uart0_cli(void)
   {
     byte = (UART0_DR_R & 0xFF);
 
-    if(byte == '\r' || byte == 3)
+    if(byte == '\r')
     {
       cnt = cfifo_cnt(&uart0_cf);
       if(cnt)
@@ -122,23 +129,62 @@ void uart0_cli(void)
         cfifo_to_cfifo_transfer(&user_cf, &uart0_cf);
         process_cmd(&uart0_cf);
       }
-      uart0_newline(&user_cf);
-      uart0_prompt(&user_cf);
-      uart0_print(&user_cf);
+      uart_newline(&user_cf);
+      uart_prompt(&user_cf);
+      uart_print(&user_cf);
     }
     else if(byte == 0x7F)
     {
       cnt = cfifo_cnt(&user_cf);
       if(cnt)
       {
-        uart0_backspace(&user_cf);
-        uart0_print(&user_cf);
+        uart_backspace(&user_cf);
+        uart_print(&user_cf);
         cfifo_get(&user_cf, &byte);
       }
     }
     else
     {
-        uart0_put_byte(byte);
+        uart_put_byte(byte);
+        cfifo_put(&user_cf, &byte);
+    }
+  }
+}
+
+void uart_cli(uart_t *u)
+{
+  uint8_t byte;
+  uint8_t cnt;
+
+  while(! (UART0_FR_R & UART_FR_RXFE) )
+  {
+    byte = (UART0_DR_R & 0xFF);
+
+    cnt = cfifo_cnt(u->cf);
+
+    if(byte == '\r')
+    {
+      if(cnt)
+      {
+        cfifo_to_cfifo_transfer(u->ucf, u->cf);
+        process_cmd(u->cf);
+      }
+      uart_newline(&user_cf);
+      uart_prompt(&user_cf);
+      uart_print(&user_cf);
+    }
+    else if(byte == 0x7F)
+    {
+      if(cnt)
+      {
+        uart_backspace(&user_cf);
+        uart_print(&user_cf);
+        cfifo_get(&user_cf, &byte);
+      }
+    }
+    else
+    {
+        uart_put_byte(byte);
         cfifo_put(&user_cf, &byte);
     }
   }

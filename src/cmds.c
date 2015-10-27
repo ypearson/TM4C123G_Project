@@ -16,8 +16,6 @@ cmd_t cmds[6] = {
                   {"set", "set value of target variable.", cmd_help},
                   {0,0,0}};
 
-cfifo_t cmd_cf;
-
 uint8_t cmd_help(int argc, char **argv)
 {
     uint8_t i = 0;

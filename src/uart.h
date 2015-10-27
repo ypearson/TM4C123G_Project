@@ -8,6 +8,7 @@
 typedef struct
 {
 	cfifo_t *cf;
+	cfifo_t *ucf;
 	void (*init)(void);
 	void (*print)(cfifo_t *cf);
 
@@ -18,19 +19,19 @@ void uart0_init(void);
 void uart0_enable_int(void);
 
 void uart0_put_byte(uint8_t data);
-void uart0_put_string(cfifo_t *cf, const char *str);
-void uart0_print(cfifo_t *cf);
+void uart_put_string(cfifo_t *cf, const char *str);
+void uart_print(cfifo_t *cf);
 
 void uart0_cli(void);
 
-void uart0_newline(cfifo_t *cf);
-void uart0_error(cfifo_t *cf);
-void uart0_prompt(cfifo_t *cf);
-void uart0_newline(cfifo_t *cf);
-void uart0_backspace(cfifo_t *cf);
-void uart0_prompt(cfifo_t *cf);
-void uart0_error(cfifo_t *cf);
-void uart0_hex(cfifo_t *cf);
-void uart0_spaces(cfifo_t *cf);
+void uart_newline(cfifo_t *cf);
+void uart_error(cfifo_t *cf);
+void uart_prompt(cfifo_t *cf);
+void uart_newline(cfifo_t *cf);
+void uart_backspace(cfifo_t *cf);
+void uart_prompt(cfifo_t *cf);
+void uart_error(cfifo_t *cf);
+void uart_hex(cfifo_t *cf);
+void uart_spaces(cfifo_t *cf);
 
 #endif

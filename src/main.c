@@ -26,6 +26,8 @@ int main(void)
 
     timer_init();
 
+    uart_init();
+
     systick_init(10000);
 
     systick_enable_int();
@@ -34,6 +36,7 @@ int main(void)
 
     for(;;)
     {
+        uart0_cli();
     }
 
     return 0;
