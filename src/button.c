@@ -65,7 +65,7 @@ void button_handler(push_buttons_t *b)
     {
         if(pb->state == PRESSED)
         {
-            pb->timestamp = timer_get_time();
+            pb->timestamp = timer_get_time_now();
             pb->state = DEBOUNCE;
             mqueue_put(&application_mq, &pb->msg);
         }

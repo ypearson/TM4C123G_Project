@@ -27,7 +27,7 @@ void timer_tick(void)
   timer.cnt1++;
 }
 
-uint32_t timer_get_time(void)
+uint32_t timer_get_time_now(void)
 {
 	//return *(timer.pcnt);
 	return timer.cnt1;
