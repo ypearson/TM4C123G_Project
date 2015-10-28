@@ -69,10 +69,11 @@ uint8_t cmd_ls(int argc, char **argv)
   while(vars[i].name)
   {
     cfifo_copy_string(vars[i].name, &cmd_cf);
-    //ascii_append_spaces(&cmd_cf);
+    cfifo_copy_string("    ", &cmd_cf);
     ascii_uint32_to_ascii(&cmd_cf, vars[i].data);
     ascii_append_hex(&cmd_cf);
     ascii_uint32_to_ascii_hex(&cmd_cf, (uint32_t) &vars[i] );
+    cfifo_copy_string("    ", &cmd_cf);
     cfifo_copy_string(vars[i].name, &cmd_cf);
     ascii_append_newline(&cmd_cf);
     i++;
