@@ -5,17 +5,18 @@
 #include "mqueue.h"
 #include "led.h"
 #include "button.h"
+#include "uart.h"
 
 typedef struct
 {
 	mqueue_t       *mq;
 	leds_t         *leds;
 	push_buttons_t *bt;
-} application_t;
+	uart_t         *uart;
 
-void app_handler_init(void);
-void app_handler_run(void);
+} volatile application_t;
 
-static volatile application_t app;
+void app_handler_init(application_t *app);
+void app_handler_run(application_t *app);
 
 #endif

@@ -24,6 +24,6 @@ void SysTick_Handler(void)
 {
     timer_tick();
 
-    app_handler_run();
+    //app_handler_run(&app); //fix!
 
 }

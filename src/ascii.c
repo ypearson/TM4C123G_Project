@@ -10,14 +10,29 @@ void ascii_append_newline(cfifo_t *cf)
     cfifo_copy_string(NEWLINE, cf);     
 }
 
+const char* ascii_get_newline(void)
+{
+  return NEWLINE;
+}
+
 void ascii_append_backspace(cfifo_t *cf)
 {
     cfifo_copy_string(BACKSPACE, cf);
 }
 
+const char* ascii_get_backspace(void)
+{
+  return BACKSPACE;
+}
+
 void ascii_append_prompt(cfifo_t *cf)
 {
     cfifo_copy_string(PROMPT, cf);
+}
+
+const char* ascii_get_prompt(void)
+{
+  return PROMPT;
 }
 
 void ascii_append_hex(cfifo_t *cf)

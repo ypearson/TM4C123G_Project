@@ -8,18 +8,17 @@
 static cfifo_t  uart0_cf;
 static cfifo_t  user_cf;
 
-uart_t uart0;
-
 void uart_init(void)
 {
     cfifo_init(&uart0_cf);
     cfifo_init(&user_cf);
 
-    uart0.self  = 0;
-    uart0.cf    = &uart0_cf;
-    uart0.ucf   = &user_cf;
-    uart0.init  = uart0_init;
-    uart0.print = uart_print;
+    uart0.self         = 0;
+    uart0.cf           = &uart0_cf;
+    uart0.ucf          = &user_cf;
+    uart0.init         = uart0_init;
+    uart0.print        = uart_print;
+    uart0.print_string = uart_print_string;
 
     uart0.init();
 }
@@ -79,6 +78,22 @@ void uart_print(device_t device, cfifo_t *cf)
   }
 }
 
+void uart_print_string(device_t device, const char *str)
+{
+  uint8_t val;
+
+  while(*str)
+  {
+    switch(device)
+    {
+        default:
+        uart_put_byte(device, (uint8_t)*str++);
+        break;
+    }
+  }
+}
+
+
 void uart_cli(uart_t *uart)
 {
   uint8_t byte;
@@ -94,20 +109,20 @@ void uart_cli(uart_t *uart)
         case CR:
         if(cnt)
         {
+            cfifo_init(uart->cf);
             cfifo_to_cfifo_transfer(uart->ucf, uart->cf);
             process_cmd(uart->cf);
         }
-        ascii_append_newline(uart->ucf);
-        ascii_append_prompt(uart->ucf);
+        uart->print_string(uart->self, ascii_get_newline() );
+        uart->print_string(uart->self, ascii_get_prompt() );
         uart->print(uart->self, uart->ucf);
         break;
 
         case DEL:
         if(cnt)
         {
-            ascii_append_backspace(uart->ucf);
-            uart->print(uart->self, uart->ucf);
-            cfifo_get(uart->ucf, &byte);
+            cfifo_pop(uart->ucf, &byte);
+            uart->print_string(uart->self, ascii_get_backspace() );
         }
         break;
 
