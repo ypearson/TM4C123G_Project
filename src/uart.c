@@ -1,14 +1,9 @@
 #include "tm4c123gh6pm.h"
 #include "uart.h"
 #include "cfifo.h"
-#include "ascii_helpers.h"
+#include "ascii.h"
 #include "cmds.h"
 #include "vars.h"
-
-const char* BACKSPACE = "\x8\x20\x8";
-const char* NEWLINE   = "\r\n";
-const char* PROMPT   = ">";
-const char* HEX   = "  0x";
 
 static cfifo_t  uart0_cf;
 static cfifo_t  user_cf;
@@ -83,34 +78,6 @@ void uart_print(device_t device, cfifo_t *cf)
   }
 }
 
-void uart_put_string(cfifo_t *cf, const char *str)
-{
-    while(*str)
-    {
-        cfifo_put(cf, (uint8_t*)str++);
-    }
-}
-
-void uart_newline(cfifo_t *cf)
-{
-    uart_put_string(cf, NEWLINE);
-}
-
-void uart_backspace(cfifo_t *cf)
-{
-    uart_put_string(cf, BACKSPACE);
-}
-
-void uart_prompt(cfifo_t *cf)
-{
-    uart_put_string(cf, PROMPT);
-}
-
-void uart_hex(cfifo_t *cf)
-{
-    uart_put_string(cf, HEX);
-}
-
 void uart_cli(uart_t *uart)
 {
   uint8_t byte;
@@ -123,21 +90,21 @@ void uart_cli(uart_t *uart)
 
     switch(byte)
     {
-        case '\r':
+        case CR:
         if(cnt)
         {
             cfifo_to_cfifo_transfer(uart->ucf, uart->cf);
             process_cmd(uart->cf);
         }
-        uart_newline(uart->ucf);
-        uart_prompt(uart->ucf);
+        ascii_append_newline(uart->ucf);
+        ascii_append_prompt(uart->ucf);
         uart->print(uart->self, uart->ucf);
         break;
 
-        case 0x7F:
+        case DEL:
         if(cnt)
         {
-            uart_backspace(uart->ucf);
+            ascii_append_backspace(uart->ucf);
             uart->print(uart->self, uart->ucf);
             cfifo_get(uart->ucf, &byte);
         }

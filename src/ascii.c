@@ -1,4 +1,24 @@
-#include "ascii_helpers.h"
+#include "ascii.h"
+
+void ascii_append_newline(cfifo_t *cf)
+{
+    cfifo_copy_string(NEWLINE, cf);     
+}
+
+void ascii_append_backspace(cfifo_t *cf)
+{
+    cfifo_copy_string(BACKSPACE, cf);
+}
+
+void ascii_append_prompt(cfifo_t *cf)
+{
+    cfifo_copy_string(PROMPT, cf);
+}
+
+void ascii_append_hex(cfifo_t *cf)
+{
+    cfifo_copy_string(HEX, cf);
+}
 
 void uint32_to_ascii(cfifo_t *cf, const uint32_t input)
 {

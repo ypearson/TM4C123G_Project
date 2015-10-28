@@ -2,8 +2,11 @@
 #define _UART_H
 
 #include "ctypes.h"
-#include "ascii_helpers.h"
+#include "ascii.h"
 #include "cfifo.h"
+
+#define CR  (0x7F)
+#define DEL (0x0D)
 
 typedef uint8_t device_t;
 
@@ -26,10 +29,5 @@ void uart_put_string(cfifo_t *cf, const char *str);
 void uart_print(device_t device, cfifo_t *cf);
 
 void uart_cli(uart_t *uart);
-
-void uart_newline(cfifo_t *cf);
-void uart_backspace(cfifo_t *cf);
-void uart_prompt(cfifo_t *cf);
-void uart_hex(cfifo_t *cf);
 
 #endif
