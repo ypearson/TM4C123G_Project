@@ -5,12 +5,12 @@
 
 typedef struct
 {
-	#define SZ 64u
+	#define SZ 512u
 	uint8_t  buf[SZ];
 	uint8_t *head;
 	uint8_t *tail;
-	uint8_t  sz;
-	uint8_t  cnt;
+	uint16_t  sz;
+	uint16_t  cnt;
 } cfifo_t;
 
 void    cfifo_init(cfifo_t *cf);

@@ -27,7 +27,7 @@ uint8_t cmd_help(int argc, char **argv)
     {
         ascii_append_newline(&cmd_cf);
         cfifo_copy_string(cmds[i].name, &cmd_cf);
-        //ascii_append_spaces(&cmd_cf);
+        cfifo_copy_string("    ", &cmd_cf);
         cfifo_copy_string(cmds[i].usage, &cmd_cf);
         i++;
     }
@@ -120,12 +120,14 @@ void process_cmd(cfifo_t *cf)
   }
   i = 0;
 
+  cfifo_init(cf);
+
   while(cmds[i].name)
   {
     if(!cstrcmp(argv[0], cmds[i].name))
     {
       ret = cmds[i].fnc(argc,argv);
-      cfifo_to_cfifo_transfer(cf, &cmd_cf);
+      cfifo_to_cfifo_transfer(&cmd_cf, cf);
       break;
     }
     i++;

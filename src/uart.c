@@ -115,7 +115,7 @@ void uart_cli(uart_t *uart)
         }
         uart->print_string(uart->self, ascii_get_newline() );
         uart->print_string(uart->self, ascii_get_prompt() );
-        uart->print(uart->self, uart->ucf);
+        uart->print(uart->self, uart->cf);
         break;
 
         case DEL:
