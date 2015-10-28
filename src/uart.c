@@ -7,7 +7,8 @@
 
 static cfifo_t  uart0_cf;
 static cfifo_t  user_cf;
-static uart_t   uart0;
+
+uart_t uart0;
 
 void uart_init(void)
 {

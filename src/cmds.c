@@ -1,5 +1,5 @@
 #include "cmds.h"
-#include "ascii_helpers.h"
+#include "ascii.h"
 #include "vars.h"
 #include "uart.h"
 #include "cstr.h"
@@ -27,7 +27,7 @@ uint8_t cmd_help(int argc, char **argv)
     {
         ascii_append_newline(&cmd_cf);
         cfifo_copy_string(cmds[i].name, &cmd_cf);
-        ascii_append_spaces(&cmd_cf);
+        //ascii_append_spaces(&cmd_cf);
         cfifo_copy_string(cmds[i].usage, &cmd_cf);
         i++;
     }
@@ -39,7 +39,7 @@ uint8_t cmd_get(int argc, char **argv)
 {
     uint8_t i = 0;
     cfifo_init(&cmd_cf);
-    uart_newline(&cmd_cf);
+    ascii_append_newline(&cmd_cf);
 
   if(argc != 2)
     return 1;
@@ -50,9 +50,8 @@ uint8_t cmd_get(int argc, char **argv)
       if(!cstrcmp(argv[1], vars[i].name))
       {
         cfifo_copy_string(vars[i].name, &cmd_cf);
-        ascii_append_spaces(&cmd_cf);
-        uint32_to_ascii(&cmd_cf, vars[i].data);
-        cfifo_copy_string(vars[i].data, &cmd_cf);
+        //ascii_append_spaces(&cmd_cf);
+        ascii_uint32_to_ascii(&cmd_cf, vars[i].data);
         break;
       }
       i++;
@@ -70,13 +69,11 @@ uint8_t cmd_ls(int argc, char **argv)
   while(vars[i].name)
   {
     cfifo_copy_string(vars[i].name, &cmd_cf);
-    ascii_append_spaces(&cmd_cf);
-    uint32_to_ascii(&cmd_cf, vars[i].data);
-    cfifo_copy_string(vars[i].data, &cmd_cf);
+    //ascii_append_spaces(&cmd_cf);
+    ascii_uint32_to_ascii(&cmd_cf, vars[i].data);
     ascii_append_hex(&cmd_cf);
-    //uint32_to_ascii_hex(&cmd_cf, (uint32_t) &vars[i] );
-    //cfifo_copy_string(vars[i].name, &cmd_cf);
-    //uart_put_string(&cmd_cf);
+    ascii_uint32_to_ascii_hex(&cmd_cf, (uint32_t) &vars[i] );
+    cfifo_copy_string(vars[i].name, &cmd_cf);
     ascii_append_newline(&cmd_cf);
     i++;
   }

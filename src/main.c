@@ -36,7 +36,7 @@ int main(void)
 
     for(;;)
     {
-        uart0_cli();
+        uart_cli();
     }
 
     return 0;

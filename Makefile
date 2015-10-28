@@ -23,7 +23,7 @@ CSRC=main.c \
      mqueue.c \
      app_handler.c \
      uart.c \
-     ascii_helpers.c \
+     ascii.c \
      cmds.c \
 
 

@@ -71,7 +71,7 @@ void button_handler(push_buttons_t *b)
         }
         else if(pb->state == DEBOUNCE)
         {
-             dt = timer_elasped(pb->timestamp, timer_get_time());
+             dt = timer_elasped(pb->timestamp, timer_get_time_now());
              if( dt >= pb->dtime )
              {
                 state = pb->get();

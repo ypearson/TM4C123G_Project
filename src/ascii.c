@@ -1,5 +1,10 @@
 #include "ascii.h"
 
+static const char* BACKSPACE = "\x8\x20\x8";
+static const char* NEWLINE   = "\r\n";
+static const char* PROMPT    = ">";
+static const char* HEX       = "  0x";
+
 void ascii_append_newline(cfifo_t *cf)
 {
     cfifo_copy_string(NEWLINE, cf);     
@@ -20,7 +25,7 @@ void ascii_append_hex(cfifo_t *cf)
     cfifo_copy_string(HEX, cf);
 }
 
-void uint32_to_ascii(cfifo_t *cf, const uint32_t input)
+void ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input)
 {
   #define ASCII_OFFSET (0x30)
   #define NULL         (0x00)
@@ -59,7 +64,7 @@ void uint32_to_ascii(cfifo_t *cf, const uint32_t input)
   }
 }
 
-uint64_t uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
+uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
 {
   const uint64_t lessa = 0x30;
   const uint64_t morea = 0x37;
