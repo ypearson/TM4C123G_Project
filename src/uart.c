@@ -3,7 +3,6 @@
 #include "cfifo.h"
 #include "ascii.h"
 #include "cmds.h"
-#include "vars.h"
 
 static cfifo_t  uart0_cf;
 static cfifo_t  user_cf;
@@ -113,9 +112,8 @@ void uart_cli(uart_t *uart)
             cfifo_to_cfifo_transfer(uart->ucf, uart->cf);
             process_cmd(uart->cf);
         }
-        uart->print_string(uart->self, ascii_get_newline() );
-        uart->print_string(uart->self, ascii_get_prompt() );
         uart->print(uart->self, uart->cf);
+        uart->print_string(uart->self, ascii_get_prompt() );
         break;
 
         case DEL:

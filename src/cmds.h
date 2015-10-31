@@ -13,6 +13,7 @@ typedef struct
 
 uint8_t cmd_help(int argc, char **argv);
 uint8_t cmd_get(int argc, char **argv);
+uint8_t cmd_set(int argc, char **argv);
 uint8_t cmd_ls(int argc, char **argv);
 
 void process_cmd(cfifo_t *cf);

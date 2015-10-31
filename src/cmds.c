@@ -4,16 +4,12 @@
 #include "uart.h"
 #include "cstr.h"
 
-vars_t vars[3] = { {"v0", 26, &vars[0].data},
-                   {"v1", 16, &vars[1].data},
-                   {0,0,0}};
-
 cmd_t cmds[6] = {
                   {"help", "this is the usage statement for help.", cmd_help },
                   {"ls", "this is the usage statement for hello.", cmd_ls },
                   {"cd", "this is the usage statement for hello.", cmd_help },
                   {"get", "print value of target variable.", cmd_get},
-                  {"set", "set value of target variable.", cmd_help},
+                  {"set", "set value of target variable.", cmd_set},
                   {0,0,0}};
 
 static cfifo_t cmd_cf;
@@ -50,14 +46,43 @@ uint8_t cmd_get(int argc, char **argv)
       if(!cstrcmp(argv[1], vars[i].name))
       {
         cfifo_copy_string(vars[i].name, &cmd_cf);
-        //ascii_append_spaces(&cmd_cf);
-        ascii_uint32_to_ascii(&cmd_cf, vars[i].data);
+        cfifo_copy_string("    ", &cmd_cf);
+        ascii_uint32_to_ascii_hex(&cmd_cf, *vars[i].pdata);
         break;
       }
       i++;
      }
    }
   return 0;
+}
+
+uint8_t cmd_set(int argc, char **argv)
+{
+    uint8_t i = 0;
+    cfifo_init(&cmd_cf);
+    ascii_append_newline(&cmd_cf);
+    ascii_uint32_to_ascii(&cmd_cf, argc);
+    ascii_append_newline(&cmd_cf);
+    cfifo_copy_string(argv[2], &cmd_cf);
+
+
+    if(argc != 2)
+        return 1;
+    else
+    {
+        while(vars[i].name)
+        {
+            if(!cstrcmp(argv[1], vars[i].name))
+            {
+                cfifo_copy_string("!set!   ", &cmd_cf);
+                *vars[i].pdata = 0x1;
+                break;
+            }
+            i++;
+        }
+    }
+
+    return 0;
 }
 
 uint8_t cmd_ls(int argc, char **argv)
@@ -70,15 +95,9 @@ uint8_t cmd_ls(int argc, char **argv)
   {
     cfifo_copy_string(vars[i].name, &cmd_cf);
     cfifo_copy_string("    ", &cmd_cf);
-    ascii_uint32_to_ascii(&cmd_cf, vars[i].data);
-    ascii_append_hex(&cmd_cf);
-    ascii_uint32_to_ascii_hex(&cmd_cf, (uint32_t) &vars[i] );
-    cfifo_copy_string("    ", &cmd_cf);
-    cfifo_copy_string(vars[i].name, &cmd_cf);
-    ascii_append_newline(&cmd_cf);
+    ascii_uint32_to_ascii_hex(&cmd_cf, *vars[i].pdata);
     i++;
   }
-
   return 0;
 }
 
@@ -120,6 +139,7 @@ void process_cmd(cfifo_t *cf)
     arg[i++] = 0;
   }
   i = 0;
+  argc--; //fix
 
   cfifo_init(cf);
 
@@ -128,6 +148,8 @@ void process_cmd(cfifo_t *cf)
     if(!cstrcmp(argv[0], cmds[i].name))
     {
       ret = cmds[i].fnc(argc,argv);
+      if(ret)
+        cfifo_copy_string("error\r\n", &cmd_cf);
       cfifo_to_cfifo_transfer(&cmd_cf, cf);
       break;
     }

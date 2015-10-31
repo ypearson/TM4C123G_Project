@@ -2,12 +2,12 @@
 
 static const char* BACKSPACE = "\x8\x20\x8";
 static const char* NEWLINE   = "\r\n";
-static const char* PROMPT    = ">";
-static const char* HEX       = "  0x";
+static const char* PROMPT    = "\r\n>";
+static const char* HEX       = "0x";
 
 void ascii_append_newline(cfifo_t *cf)
 {
-    cfifo_copy_string(NEWLINE, cf);     
+    cfifo_copy_string(NEWLINE, cf);
 }
 
 const char* ascii_get_newline(void)
@@ -109,6 +109,8 @@ uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
     input64 += data[i];
   }
 
+  ascii_append_hex(cf);
+
   for(i = 0; i < 8; i++)
   {
     val = (uint8_t) ( 0xFF & (input64 >> (2*(7-i)*4)) );
@@ -116,4 +118,15 @@ uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
   }
 
   return input64;
+}
+
+uint32_t ascii_dec_to_uint32(char *str)
+{
+  uint8_t i = 0;
+
+  while(*str++)
+  {
+    i++;
+  }
+
 }
