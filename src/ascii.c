@@ -1,4 +1,5 @@
 #include "ascii.h"
+#include "cstr.h"
 
 static const char* BACKSPACE = "\x8\x20\x8";
 static const char* NEWLINE   = "\r\n";
@@ -42,10 +43,6 @@ void ascii_append_hex(cfifo_t *cf)
 
 void ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input)
 {
-  #define ASCII_OFFSET (0x30)
-  #define NULL         (0x00)
-  #define SP           (0x20)
-
   uint8_t i = 0, r = 0;
   uint32_t num = input;
   uint8_t data[32];
@@ -56,7 +53,7 @@ void ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input)
     i++;
   }
   num = input;
-  data[i--] = NULL; //TODO, sz
+  data[i--] = 0; //null TODO, sz
 
   while( num )
   {
@@ -68,7 +65,7 @@ void ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input)
   if( data[0] == SP)
   {
     data[0] = ASCII_OFFSET;
-    data[1] = NULL; //TODO, sz
+    data[1] = 0; //null TODO, sz
   }
 
   i = 0;
@@ -122,11 +119,42 @@ uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
 
 uint32_t ascii_dec_to_uint32(char *str)
 {
-  uint8_t i = 0;
+  #define MAX_BYTES 12
+  #define forloop() for(i = 0; i < len; i++)
 
-  while(*str++)
-  {
-    i++;
-  }
+  int i;
+  char s[MAX_BYTES];
+  int len = cstrlen(str);
+  uint64_t r = 0; //change to 2 x 32 bit numbers
+  uint64_t d = 0;
+  const uint32_t e10[MAX_BYTES] = {1,
+                                   10,
+                                   100,
+                                   1000,
+                                   10000,
+                                   100000,
+                                   1000000,
+                                   10000000,
+                                   100000000,
+                                   1000000000,
+                                   10000000000,
+                                   100000000000,}; // 100B, max len == 12
+  if(len > MAX_BYTES)
+    return 0;
 
+  memclear( (uint8_t*)s, MAX_BYTES);
+
+  forloop()
+    s[i] = *(str+i) - ASCII_OFFSET;
+
+  forloop()
+    r += ( ( (uint64_t) s[ (len-1) - i] ) << (4*i) );
+
+  forloop()
+    d += ( (((0xfLL<<(4*i))&r) >> (4*i)) * e10[i] );
+
+  #undef forloop()
+  #undef MAX_BYTES
+
+  return (uint32_t) d;
 }

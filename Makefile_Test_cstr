@@ -1,12 +1,12 @@
 # ==========================================
 #   Unity Makefile
 #
-#   Module - ascii.c
+#   Module - cstr.c
 #
 # ==========================================
 
 # Module Under Test
-MODULE=ascii
+MODULE=cstr
 
 # Compiler
 C_COMPILER=gcc
@@ -25,7 +25,7 @@ TARGET=Test$(MODULE).unitTest
 U_SRC_FILES=$(U_ROOT)/src/unity.c test/test_$(MODULE).c  $(U_TEST)/$(U_TEST_RUNNER)/Test$(MODULE)_Runner.c
 
 # Module source under test
-MODULE_SRC_FILE=src/$(MODULE).c src/cfifo.c src/cstr.c
+MODULE_SRC_FILE=src/$(MODULE).c src/cfifo.c
 
 # Mock source file
 #CMOCK_SRC_FILE=$(CM_MOCKS)/MockGPIOHardware.c $(CM_ROOT)/cmock.c
@@ -41,7 +41,6 @@ all: clean default
 
 default:
 	mkdir -p $(U_TEST)/$(U_TEST_RUNNER)
-	#ruby TDD/CMock/lib/cmock.rb --mock_path=test/mocks src/GPIOHardware.h
 	ruby $(U_ROOT)/auto/generate_test_runner.rb $(U_TEST)/test_$(MODULE).c  $(U_TEST)/$(U_TEST_RUNNER)/Test$(MODULE)_Runner.c
 	$(C_COMPILER) $(INC_DIRS) $(SYM) $(U_SRC_FILES) $(CMOCK_SRC_FILE) $(MODULE_SRC_FILE) -o test/$(TARGET)
 	clear

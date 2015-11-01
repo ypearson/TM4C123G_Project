@@ -4,6 +4,9 @@
 #include "ctypes.h"
 #include "cfifo.h"
 
+#define ASCII_OFFSET (0x30)
+#define SP           (0x20)
+
 void     ascii_append_newline(cfifo_t *cf);
 void     ascii_append_backspace(cfifo_t *cf);
 void     ascii_append_prompt(cfifo_t *cf);

@@ -3,8 +3,8 @@
 
 #include "ctypes.h"
 
-int cstrcmp(const char *s1, const char *s2);
+int  cstrlen(const char *str);
+int  cstrcmp(const char *s1, const char *s2);
 void memclear(uint8_t *pd, uint8_t sz);
-
 
 #endif
