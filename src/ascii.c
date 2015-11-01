@@ -153,7 +153,7 @@ uint32_t ascii_dec_to_uint32(char *str)
   loop()
     d += ( (((0xfLL<<(4*i))&r) >> (4*i)) * e10[i] );
 
-  #undef forloop()
+  #undef loop()
   #undef MAX_BYTES
 
   return (uint32_t) d;
