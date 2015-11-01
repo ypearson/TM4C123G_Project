@@ -120,7 +120,7 @@ uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
 uint32_t ascii_dec_to_uint32(char *str)
 {
   #define MAX_BYTES 12
-  #define forloop() for(i = 0; i < len; i++)
+  #define loop() for(i = 0; i < len; i++)
 
   int i;
   char s[MAX_BYTES];
@@ -144,17 +144,22 @@ uint32_t ascii_dec_to_uint32(char *str)
 
   memclear( (uint8_t*)s, MAX_BYTES);
 
-  forloop()
+  loop()
     s[i] = *(str+i) - ASCII_OFFSET;
 
-  forloop()
+  loop()
     r += ( ( (uint64_t) s[ (len-1) - i] ) << (4*i) );
 
-  forloop()
+  loop()
     d += ( (((0xfLL<<(4*i))&r) >> (4*i)) * e10[i] );
 
   #undef forloop()
   #undef MAX_BYTES
 
   return (uint32_t) d;
+}
+
+uint32_t ascii_hex_to_uint32(char *str)
+{
+
 }
