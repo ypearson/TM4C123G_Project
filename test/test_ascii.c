@@ -111,3 +111,14 @@ void test_ascii_dec_to_uint32(void)
 
 //   return (uint32_t) d;
 // }
+
+void test_ascii_hex_to_uint32(void)
+{
+    uint32_t hex = 0;
+
+    hex = ascii_hex_to_uint32("0x1");
+    TEST_ASSERT_EQUAL_HEX32(0x1, hex);
+
+
+
+}

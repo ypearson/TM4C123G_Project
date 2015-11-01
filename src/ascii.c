@@ -162,4 +162,6 @@ uint32_t ascii_dec_to_uint32(char *str)
 uint32_t ascii_hex_to_uint32(char *str)
 {
 
+  return 0x1;
+
 }
