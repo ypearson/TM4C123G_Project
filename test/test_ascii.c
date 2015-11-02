@@ -53,10 +53,10 @@ void test_ascii_dec_to_uint32(void)
     unsigned int dec = 0;
 
     // supports only 12 digits
-    dec = ascii_dec_to_uint32("923456789123");
-    TEST_ASSERT_EQUAL_HEX32(923456789123, dec);
+    dec = ascii_dec_to_uint32("923789123");
+    TEST_ASSERT_EQUAL_HEX32(923789123, dec);
 
-    dec = ascii_dec_to_uint32("9234567891230");
+    dec = ascii_dec_to_uint32("9230007891230");
     TEST_ASSERT_EQUAL_HEX32(0, dec);
 
 }

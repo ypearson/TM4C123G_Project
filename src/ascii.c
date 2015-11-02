@@ -119,7 +119,7 @@ uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
 
 uint32_t ascii_dec_to_uint32(char *str)
 {
-  #define MAX_BYTES 12
+  #define MAX_BYTES 10
   #define loop() for(i = 0; i < len; i++)
 
   int i;
@@ -136,9 +136,7 @@ uint32_t ascii_dec_to_uint32(char *str)
                                    1000000,
                                    10000000,
                                    100000000,
-                                   1000000000,
-                                   10000000000,
-                                   100000000000,}; // 100B, max len == 12
+                                   1000000000,}; // 1B, max len == 10
   if(len > MAX_BYTES)
     return 0;
 
@@ -159,13 +157,16 @@ uint32_t ascii_dec_to_uint32(char *str)
   return (uint32_t) d;
 }
 
-uint32_t ascii_hex_to_uint32(const char *str)
+uint32_t ascii_hex_to_uint32(char *str)
 {
-  uint8_t i = 0;
+  uint8_t  i = 0;
+  uint32_t r = 0;
   int     len = cstrlen(str);
-  char s[12];
+  char s[16+1];
+  char *p;
+  const uint8_t lessa = 0x30;
+  const uint8_t morea = 0x37;
   const char *hex = "0x";
-  const char *pc;
 
   #ifdef TEST
   #include <stdio.h>
@@ -175,43 +176,70 @@ uint32_t ascii_hex_to_uint32(const char *str)
   if( len < (2+1) || len > (2+16) )
     return 2;
 
+  len -= 2; // remove prefix length
+
   while(*hex) // check for 0x prefix
     if(*hex++ - *str++)
       return 3;
 
-  pc = str;
+  p = str; // point to MSB, not prefix
 
-  while(*pc)
+  while(*p)
   {
-    if( !(*s < 0x30 || *s > 0x39) ) // 0-9
-      pc++;
-    else if( !(*s < 0x61 || *s > 0x66) ) // a-f
-      pc++;
-    else if( !(*s < 0x41 || *s > 0x46) )// A-F
-      pc++;
+    if(      !(*p < 0x30 || *p > 0x39) ) // 0-9
+      p++;
+    else if( !(*p < 0x61 || *p > 0x66) ) // a-f
+      p++;
+    else if( !(*p < 0x41 || *p > 0x46) )// A-F
+      p++;
     else
       return 5;
   }
 
-  memclear( (uint8_t*)s, 12);
+  memclear( (uint8_t*)s, 16+1);
 
-    s = str;
-    while(*s)
-    {
-       if( ! (*s < 0x61 || *s > 0x66) )
-         {
-          #ifdef TEST
-          #include <stdio.h>
-          printf("c=%c ",*s);
-          #endif
-         }
-      s++;
-    }
+  p = str; // point to MSB, not prefix
+
+  for(i = 0; i < len; i++) // copy to non-const[]
+    s[i] = *(p+i);
+  p = s;
+
+  while(*p)
+  {
+     if( ! (*p < 0x61 || *p > 0x66) ) // convert a-f --> A-F
+        *p -= 0x20;
+      p++;
+  }
+  p = s;
+
+  while(*p)
+  {
+    if( *p > 0x40 ) // remove ascii offset
+      *p -= morea;
+    else
+      *p -= lessa;
+    p++;
+  }
 
   #ifdef TEST
   #include <stdio.h>
-  printf("str=%s\n",str);
+  printf("str=");
+  for(i = 0; i < len; i++)
+      printf("%x",s[i]);
+  printf("\n");
   #endif
+
+  for(i = 0; i < len; i++)
+    r += ( (uint32_t)s[i] << (4*i) ); //backwards, oops
+
+  #ifdef TEST
+  #include <stdio.h>
+  printf("r=%x\n", r);
+  #endif
+
+
+
+
 
 
 
