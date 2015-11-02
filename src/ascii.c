@@ -151,7 +151,7 @@ uint32_t ascii_dec_to_uint32(char *str)
     r += ( ( (uint64_t) s[ (len-1) - i] ) << (4*i) );
 
   loop()
-    d += ( (((0xfLL<<(4*i))&r) >> (4*i)) * e10[i] );
+    d += ( (((0xFLL<<(4*i))&r) >> (4*i)) * e10[i] );
 
   #undef loop()
   #undef MAX_BYTES
@@ -159,9 +159,63 @@ uint32_t ascii_dec_to_uint32(char *str)
   return (uint32_t) d;
 }
 
-uint32_t ascii_hex_to_uint32(char *str)
+uint32_t ascii_hex_to_uint32(const char *str)
 {
+  uint8_t i = 0;
+  int     len = cstrlen(str);
+  char s[12];
+  const char *hex = "0x";
+  const char *pc;
 
-  return 0x1;
+  #ifdef TEST
+  #include <stdio.h>
+  printf("len=%d\n",len);
+  #endif
+
+  if( len < (2+1) || len > (2+16) )
+    return 2;
+
+  while(*hex) // check for 0x prefix
+    if(*hex++ - *str++)
+      return 3;
+
+  pc = str;
+
+  while(*pc)
+  {
+    if( !(*s < 0x30 || *s > 0x39) ) // 0-9
+      pc++;
+    else if( !(*s < 0x61 || *s > 0x66) ) // a-f
+      pc++;
+    else if( !(*s < 0x41 || *s > 0x46) )// A-F
+      pc++;
+    else
+      return 5;
+  }
+
+  memclear( (uint8_t*)s, 12);
+
+    s = str;
+    while(*s)
+    {
+       if( ! (*s < 0x61 || *s > 0x66) )
+         {
+          #ifdef TEST
+          #include <stdio.h>
+          printf("c=%c ",*s);
+          #endif
+         }
+      s++;
+    }
+
+  #ifdef TEST
+  #include <stdio.h>
+  printf("str=%s\n",str);
+  #endif
+
+
+
+
+  return 0x0;
 
 }
