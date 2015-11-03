@@ -230,20 +230,13 @@ uint32_t ascii_hex_to_uint32(char *str)
   #endif
 
   for(i = 0; i < len; i++)
-    r += ( (uint32_t)s[i] << (4*i) ); //backwards, oops
+    r += ( (uint32_t)s[i] << 4*(len-1 - i) ); //backwards, oops
 
   #ifdef TEST
   #include <stdio.h>
   printf("r=%x\n", r);
   #endif
 
-
-
-
-
-
-
-
-  return 0x0;
+  return r;
 
 }

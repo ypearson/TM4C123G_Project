@@ -123,7 +123,7 @@ void test_ascii_hex_to_uint32(void)
     TEST_ASSERT_EQUAL_HEX32(3, hex);
 
     hex = ascii_hex_to_uint32("0x1");
-    TEST_ASSERT_EQUAL_HEX32(0x0, hex);
+    TEST_ASSERT_EQUAL_HEX32(0x1, hex);
 
     hex = ascii_hex_to_uint32("0xaaqaa");
     TEST_ASSERT_EQUAL_HEX32(0x5, hex);
@@ -132,8 +132,13 @@ void test_ascii_hex_to_uint32(void)
     TEST_ASSERT_EQUAL_HEX32(3, hex);
 
     hex = ascii_hex_to_uint32("0x1abcd");
-    TEST_ASSERT_EQUAL_HEX32(0x0, hex);
+    TEST_ASSERT_EQUAL_HEX32(0x1abcd, hex);
 
+    hex = ascii_hex_to_uint32("0xaBcD1234");
+    TEST_ASSERT_EQUAL_HEX32(0xabcd1234, hex);
+
+    hex = ascii_hex_to_uint32("0xFfFf1901");
+    TEST_ASSERT_EQUAL_HEX32(0xFfFf1901, hex);
 
 
 
