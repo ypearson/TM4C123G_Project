@@ -15,8 +15,9 @@ void     ascii_append_hex(cfifo_t *cf);
 void     ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input);
 uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input);
 
+uint8_t ascii_hex_prefix(const char *str);
 uint32_t ascii_dec_to_uint32(char *str);
-uint32_t ascii_hex_to_uint32(char *str);
+uint32_t ascii_hex_to_uint32(const char *str);
 
 const char* ascii_get_backspace(void);
 const char* ascii_get_newline(void);

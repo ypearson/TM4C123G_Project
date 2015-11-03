@@ -117,19 +117,19 @@ void test_ascii_hex_to_uint32(void)
     uint32_t hex = 0;
 
     hex = ascii_hex_to_uint32("0");
-    TEST_ASSERT_EQUAL_HEX32(2, hex);
+    TEST_ASSERT_EQUAL_HEX32(0, hex);
 
     hex = ascii_hex_to_uint32("x0x1");
-    TEST_ASSERT_EQUAL_HEX32(3, hex);
+    TEST_ASSERT_EQUAL_HEX32(0, hex);
 
     hex = ascii_hex_to_uint32("0x1");
     TEST_ASSERT_EQUAL_HEX32(0x1, hex);
 
     hex = ascii_hex_to_uint32("0xaaqaa");
-    TEST_ASSERT_EQUAL_HEX32(0x5, hex);
+    TEST_ASSERT_EQUAL_HEX32(0, hex);
 
     hex = ascii_hex_to_uint32("123123");
-    TEST_ASSERT_EQUAL_HEX32(3, hex);
+    TEST_ASSERT_EQUAL_HEX32(0, hex);
 
     hex = ascii_hex_to_uint32("0x1abcd");
     TEST_ASSERT_EQUAL_HEX32(0x1abcd, hex);

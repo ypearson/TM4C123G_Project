@@ -157,32 +157,38 @@ uint32_t ascii_dec_to_uint32(char *str)
   return (uint32_t) d;
 }
 
-uint32_t ascii_hex_to_uint32(char *str)
+uint8_t ascii_hex_prefix(const char *str)
 {
-  uint8_t  i = 0;
-  uint32_t r = 0;
-  int     len = cstrlen(str);
-  char s[16+1];
-  char *p;
-  const uint8_t lessa = 0x30;
-  const uint8_t morea = 0x37;
   const char *hex = "0x";
-
-  #ifdef TEST
-  #include <stdio.h>
-  printf("len=%d\n",len);
-  #endif
-
-  if( len < (2+1) || len > (2+16) )
-    return 2;
-
-  len -= 2; // remove prefix length
 
   while(*hex) // check for 0x prefix
     if(*hex++ - *str++)
-      return 3;
+      return 1;
 
-  p = str; // point to MSB, not prefix
+  return 0;
+}
+
+uint32_t ascii_hex_to_uint32(const char *str)
+{
+  #define MAX_BYTES (2+8+1) // prefix + 8 bytes + NULL
+  #define loop() for(i = 0; i < len; i++)
+
+  uint8_t  i = 0;
+  uint32_t r = 0;
+  int  len = cstrlen(str);
+  char s[MAX_BYTES];
+  char *p;
+  const uint8_t lessa = 0x30;
+  const uint8_t morea = 0x37;
+
+  if( len < (2+1) || len > (2+8) )
+    return 0;
+
+  if(ascii_hex_prefix(str))
+    return 0;
+
+  len -= 2; // remove prefix length
+  p = str + 2; // point to MSB, not prefix
 
   while(*p)
   {
@@ -193,12 +199,12 @@ uint32_t ascii_hex_to_uint32(char *str)
     else if( !(*p < 0x41 || *p > 0x46) )// A-F
       p++;
     else
-      return 5;
+      return 0;
   }
 
-  memclear( (uint8_t*)s, 16+1);
+  memclear( (uint8_t*)s, MAX_BYTES);
 
-  p = str; // point to MSB, not prefix
+  p = str + 2; // point to MSB, not prefix
 
   for(i = 0; i < len; i++) // copy to non-const[]
     s[i] = *(p+i);
@@ -221,22 +227,11 @@ uint32_t ascii_hex_to_uint32(char *str)
     p++;
   }
 
-  #ifdef TEST
-  #include <stdio.h>
-  printf("str=");
-  for(i = 0; i < len; i++)
-      printf("%x",s[i]);
-  printf("\n");
-  #endif
+  loop()
+    r += ( (uint32_t)s[i] << 4*(len-1 - i) ); //squeeze each byte together
 
-  for(i = 0; i < len; i++)
-    r += ( (uint32_t)s[i] << 4*(len-1 - i) ); //backwards, oops
-
-  #ifdef TEST
-  #include <stdio.h>
-  printf("r=%x\n", r);
-  #endif
+  #undef MAX_BYTES
+  #undef loop()
 
   return r;
-
 }
