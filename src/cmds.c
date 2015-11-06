@@ -104,7 +104,7 @@ uint8_t cmd_ls(int argc, char **argv)
     cfifo_copy_string("    ", &cmd_cf);
     ascii_uint32_to_ascii_hex(&cmd_cf, v->pdata);
     cfifo_copy_string("    ", &cmd_cf);
-    ascii_uint32_to_ascii_hex(&cmd_cf, (uint8_t)*(v->pdata) );
+    ascii_uint32_to_ascii_hex(&cmd_cf, (uint8_t)*(v->pdata) ); // fix
 
     ascii_append_newline(&cmd_cf);
     v++;

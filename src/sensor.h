@@ -4,7 +4,6 @@
 #include "ctypes.h"
 #include "vars.h"
 
-
 typedef struct
 {
 	uint8_t  address;
@@ -15,8 +14,6 @@ typedef struct
 	uint16_t reg3;
 	vars_t   vars[];
 } sensor_t;
-
-
 
 
 #endif
