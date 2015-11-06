@@ -2,7 +2,6 @@
 #define _VARS_H
 
 #include "ctypes.h"
-#include "timer.h"
 
 
 // typedef struct
@@ -32,15 +31,6 @@ typedef struct
 } i2c_sensor_t;
 
 
-i2c_sensor_t sensor0 = {1,2,3,4,5,6, {{"address", &sensor0.address,0},{0,0}} };
-
-vars_t vars[4] = { {"timer",   &timer, 0 },
-				   {"sensor0", &sensor0, &sensor0.vars},
-                   {0,0,0}};
-
-static vars_t *var_ptr = &vars;
-
-static vars_t * const var_ptr_home = &vars;
 
 
 #endif

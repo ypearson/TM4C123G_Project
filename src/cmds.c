@@ -4,6 +4,9 @@
 #include "uart.h"
 #include "cstr.h"
 
+extern vars_t *var_ptr;
+extern vars_t *var_ptr_home;
+
 cmd_t cmds[6] = {
                   {"help", "this is the usage statement for help.", cmd_help },
                   {"ls", "this is the usage statement for hello.", cmd_ls },
@@ -31,61 +34,61 @@ uint8_t cmd_help(int argc, char **argv)
     return 0;
 }
 
-uint8_t cmd_get(int argc, char **argv)
-{
-    uint8_t i = 0;
+ uint8_t cmd_get(int argc, char **argv)
+ {
+//     uint8_t i = 0;
 
-    if(argc != 2)
-        return 1;
-    else
-    {
-        cfifo_init(&cmd_cf);
-        ascii_append_newline(&cmd_cf);
-        while(vars[i].name)
-        {
-            if(!cstrcmp(argv[1], vars[i].name))
-            {
-                cfifo_copy_string(vars[i].name, &cmd_cf);
-                cfifo_copy_string("    ", &cmd_cf);
-                ascii_uint32_to_ascii_hex(&cmd_cf, *vars[i].pdata);
-                break;
-            }
-            i++;
-        }
-    }
-    return 0;
-}
+//     if(argc != 2)
+//         return 1;
+//     else
+//     {
+//         cfifo_init(&cmd_cf);
+//         ascii_append_newline(&cmd_cf);
+//         while(vars[i].name)
+//         {
+//             if(!cstrcmp(argv[1], vars[i].name))
+//             {
+//                 cfifo_copy_string(vars[i].name, &cmd_cf);
+//                 cfifo_copy_string("    ", &cmd_cf);
+//                 ascii_uint32_to_ascii_hex(&cmd_cf, *vars[i].pdata);
+//                 break;
+//             }
+//             i++;
+//         }
+//     }
+     return 0;
+ }
 
-uint8_t cmd_set(int argc, char **argv)
-{
-    uint8_t i = 0;
-    uint32_t input = 0;
+ uint8_t cmd_set(int argc, char **argv)
+ {
+//     uint8_t i = 0;
+//     uint32_t input = 0;
 
-    if(argc != 2)
-        return 1;
-    else
-    {
-        cfifo_init(&cmd_cf);
-        ascii_append_newline(&cmd_cf);
+//     if(argc != 2)
+//         return 1;
+//     else
+//     {
+//         cfifo_init(&cmd_cf);
+//         ascii_append_newline(&cmd_cf);
 
-        if(ascii_hex_prefix(argv[2]))
-          input = ascii_dec_to_uint32(argv[2]);
-        else
-          input = ascii_hex_to_uint32(argv[2]);
+//         if(ascii_hex_prefix(argv[2]))
+//           input = ascii_dec_to_uint32(argv[2]);
+//         else
+//           input = ascii_hex_to_uint32(argv[2]);
 
-        while(vars[i].name)
-        {
-            if(!cstrcmp(argv[1], vars[i].name))
-            {
-                *vars[i].pdata = input;
-                break;
-            }
-            i++;
-        }
-    }
+//         while(vars[i].name)
+//         {
+//             if(!cstrcmp(argv[1], vars[i].name))
+//             {
+//                 *vars[i].pdata = input;
+//                 break;
+//             }
+//             i++;
+//         }
+//     }
 
-    return 0;
-}
+     return 0;
+ }
 
 uint8_t cmd_ls(int argc, char **argv)
 {
@@ -100,6 +103,9 @@ uint8_t cmd_ls(int argc, char **argv)
     cfifo_copy_string(v->name, &cmd_cf);
     cfifo_copy_string("    ", &cmd_cf);
     ascii_uint32_to_ascii_hex(&cmd_cf, v->pdata);
+    cfifo_copy_string("    ", &cmd_cf);
+    ascii_uint32_to_ascii_hex(&cmd_cf, (uint8_t)*(v->pdata) );
+
     ascii_append_newline(&cmd_cf);
     v++;
   }
@@ -113,6 +119,12 @@ uint8_t cmd_cd(int argc, char **argv)
   void *p;
   cfifo_init(&cmd_cf);
   ascii_append_newline(&cmd_cf);
+
+  if(!argc)
+  {
+    var_ptr = var_ptr_home;
+    return 0;
+  }
 
     while(v->name)
     {
