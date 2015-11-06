@@ -28,7 +28,7 @@ typedef struct
 	uint16_t reg1;
 	uint16_t reg2;
 	uint16_t reg3;
-	vars_t   vars[6+1];
+	vars_t   vars[];
 } i2c_sensor_t;
 
 
@@ -38,9 +38,9 @@ vars_t vars[4] = { {"timer",   &timer, 0 },
 				   {"sensor0", &sensor0, &sensor0.vars},
                    {0,0,0}};
 
-vars_t *var_ptr = &vars;
+static vars_t *var_ptr = &vars;
 
-vars_t * const var_ptr_home = &vars;
+static vars_t * const var_ptr_home = &vars;
 
 
 #endif
