@@ -78,9 +78,9 @@ void ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input)
 
 uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
 {
+  const uint64_t MASK = 0xF;
   const uint64_t lessa = 0x30;
   const uint64_t morea = 0x37;
-  const uint64_t mask = 0xF;
   const uint64_t nine = 0x9;
   uint64_t input64 = 0;
   uint64_t data[8];
@@ -94,8 +94,8 @@ uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
 
   for(i = 0; i < 8; i++)
   {
-    data[i] = ( ( ( (uint64_t) input ) & ( mask << 4*i ) ) << 4*i );
-    if( ( (data[i] & ( mask << 8*i) ) ) > ( nine << 8*i ) )
+    data[i] = ( ( ( (uint64_t) input ) & ( MASK << 4*i ) ) << 4*i );
+    if( ( (data[i] & ( MASK << 8*i) ) ) > ( nine << 8*i ) )
       data[i] += (morea << 8*i);
     else
       data[i] += (lessa << 8*i);
@@ -127,6 +127,7 @@ uint32_t ascii_dec_to_uint32(char *str)
   int len = cstrlen(str);
   uint64_t r = 0; //change to 2 x 32 bit numbers
   uint64_t d = 0;
+  const uint64_t MASK = 0xF;
   const uint32_t e10[MAX_BYTES] = {1,
                                    10,
                                    100,
@@ -149,7 +150,7 @@ uint32_t ascii_dec_to_uint32(char *str)
     r += ( ( (uint64_t) s[ (len-1) - i] ) << (4*i) );
 
   loop()
-    d += ( (((0xFLL<<(4*i))&r) >> (4*i)) * e10[i] );
+    d += ( (((MASK<<(4*i))&r) >> (4*i)) * e10[i] );
 
   #undef loop()
   #undef MAX_BYTES

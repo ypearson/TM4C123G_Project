@@ -7,7 +7,7 @@
 cmd_t cmds[6] = {
                   {"help", "this is the usage statement for help.", cmd_help },
                   {"ls", "this is the usage statement for hello.", cmd_ls },
-                  {"cd", "this is the usage statement for hello.", cmd_help },
+                  {"cd", "this is the usage statement for hello.", cmd_cd },
                   {"get", "print value of target variable.", cmd_get},
                   {"set", "set value of target variable.", cmd_set},
                   {0,0,0}};
@@ -90,17 +90,44 @@ uint8_t cmd_set(int argc, char **argv)
 uint8_t cmd_ls(int argc, char **argv)
 {
   uint8_t i = 0;
+  vars_t *v = var_ptr;
+
   cfifo_init(&cmd_cf);
   ascii_append_newline(&cmd_cf);
 
-  while(vars[i].name)
+  while(v->name)
   {
-    cfifo_copy_string(vars[i].name, &cmd_cf);
+    cfifo_copy_string(v->name, &cmd_cf);
     cfifo_copy_string("    ", &cmd_cf);
-    ascii_uint32_to_ascii_hex(&cmd_cf, *vars[i].pdata);
-    i++;
+    ascii_uint32_to_ascii_hex(&cmd_cf, v->pdata);
+    ascii_append_newline(&cmd_cf);
+    v++;
   }
   return 0;
+}
+
+uint8_t cmd_cd(int argc, char **argv)
+{
+  uint8_t i = 0;
+  vars_t *v = var_ptr;
+  void *p;
+  cfifo_init(&cmd_cf);
+  ascii_append_newline(&cmd_cf);
+
+    while(v->name)
+    {
+        if(!cstrcmp( argv[1], v->name))
+        {
+            p = v->vars;
+            if(p)
+            {
+                var_ptr = (vars_t*)p;
+            }
+            break;
+        }
+        v++;
+    }
+    return 0;
 }
 
 void process_cmd(cfifo_t *cf)
