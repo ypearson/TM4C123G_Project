@@ -5,7 +5,7 @@
 
 timer_t timer = {0, {{"cnt1", &timer.cnt1, 0},{0,0,0}} };
 
-sensor_t sensor0 = {1,2,3,4,5,6, {{"address", &(sensor0.address),0},
+sensor_t sensor0 = {1,2,3,4,5,6, {{"address", &sensor0.address  ,0},
                                   {"status",  &sensor0.status,   0},
                                   {"reg0",    &sensor0.reg0,     0},
                                   {0,         0,                 0} }};

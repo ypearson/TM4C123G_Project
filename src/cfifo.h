@@ -21,7 +21,6 @@ uint8_t cfifo_pop (cfifo_t *cf, uint8_t *val);
 uint8_t cfifo_cnt (cfifo_t *cf);
 
 void    cfifo_to_cfifo_transfer(cfifo_t *scf, cfifo_t *dcf);
-void    cfifo_copy_string(const char *str, cfifo_t *cf);
-
+uint8_t cfifo_copy_string(const char *str, cfifo_t *cf);
 
 #endif

@@ -41,6 +41,14 @@ void ascii_append_hex(cfifo_t *cf)
     cfifo_copy_string(HEX, cf);
 }
 
+void ascii_append_space(cfifo_t *cf, uint8_t num)
+{
+  uint8_t i;
+
+    for(i = 0; i < num; i++)
+      cfifo_copy_string(" ", cf);
+}
+
 void ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input)
 {
   uint8_t i = 0, r = 0;
@@ -78,7 +86,7 @@ void ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input)
 
 uint64_t ascii_uint32_to_ascii_hex(cfifo_t *cf, const uint32_t input)
 {
-  const uint64_t MASK = 0xF;
+  const uint64_t MASK  = 0xF;
   const uint64_t lessa = 0x30;
   const uint64_t morea = 0x37;
   const uint64_t nine = 0x9;
@@ -207,7 +215,7 @@ uint32_t ascii_hex_to_uint32(const char *str)
 
   p = str + 2; // point to MSB, not prefix
 
-  for(i = 0; i < len; i++) // copy to non-const[]
+  loop() // copy to non-const[]
     s[i] = *(p+i);
   p = s;
 

@@ -26,7 +26,7 @@ uint8_t cmd_help(int argc, char **argv)
     {
         ascii_append_newline(&cmd_cf);
         cfifo_copy_string(cmds[i].name, &cmd_cf);
-        cfifo_copy_string("    ", &cmd_cf);
+        ascii_append_space(&cmd_cf, 8);
         cfifo_copy_string(cmds[i].usage, &cmd_cf);
         i++;
     }
@@ -100,12 +100,11 @@ uint8_t cmd_ls(int argc, char **argv)
 
   while(v->name)
   {
-    cfifo_copy_string(v->name, &cmd_cf);
-    cfifo_copy_string("    ", &cmd_cf);
+    i = cfifo_copy_string(v->name, &cmd_cf);
+    ascii_append_space(&cmd_cf, 12-i);
     ascii_uint32_to_ascii_hex(&cmd_cf, v->pdata);
-    cfifo_copy_string("    ", &cmd_cf);
+    ascii_append_space(&cmd_cf, 12-10);
     ascii_uint32_to_ascii_hex(&cmd_cf, (uint8_t)*(v->pdata) ); // fix
-
     ascii_append_newline(&cmd_cf);
     v++;
   }
@@ -134,6 +133,7 @@ uint8_t cmd_cd(int argc, char **argv)
             if(p)
             {
                 var_ptr = (vars_t*)p;
+                cfifo_copy_string(v->name, &cmd_cf);
             }
             break;
         }

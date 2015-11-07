@@ -182,10 +182,12 @@ void cfifo_to_cfifo_transfer(cfifo_t *scf, cfifo_t *dcf)
     }
 }
 
-void cfifo_copy_string(const char *str, cfifo_t *cf)
+uint8_t cfifo_copy_string(const char *str, cfifo_t *cf)
 {
-    while(*str)
+    uint8_t i = 0;
+    while(*(str+i))
     {
-        cfifo_put(cf, (uint8_t*)str++);
+        cfifo_put(cf, (uint8_t*)(str+i++));
     }
+    return i;
 }
