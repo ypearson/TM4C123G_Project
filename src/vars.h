@@ -3,9 +3,15 @@
 
 #include "ctypes.h"
 
-#define U32 (0xffffffff)
-#define U16 (0x0000ffff)
-#define U8  (0x000000ff)
+#define U32 (0xffffffffUL)
+#define U16 (0x0000ffffUL)
+#define U8  (0x000000ffUL)
+
+#define VAR(structure,name,type,link) {#name, &structure.name, type, link},
+#define VAR_END() {0,0,0,0}
+
+#define STRUCT(name) {#name, &name, U32, &name.vars},
+#define STRUCT_END() {0,0,0,0}
 
 typedef struct
 {
