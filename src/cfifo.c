@@ -166,7 +166,7 @@ uint8_t cfifo_pop(cfifo_t *cf, uint8_t *val)
 }
 
 
-uint8_t cfifo_cnt(cfifo_t *cf)
+uint16_t cfifo_cnt(cfifo_t *cf)
 {
     return cf->cnt;
 }

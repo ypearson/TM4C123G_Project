@@ -61,31 +61,45 @@ uint8_t cmd_help(int argc, char **argv)
 
  uint8_t cmd_set(int argc, char **argv)
  {
-//     uint8_t i = 0;
-//     uint32_t input = 0;
+    uint32_t input = 0;
+    uint32_t *p;
+    vars_t *v = var_ptr;
 
-//     if(argc != 2)
-//         return 1;
-//     else
-//     {
-//         cfifo_init(&cmd_cf);
-//         ascii_append_newline(&cmd_cf);
+    if(argc != 2)
+        return 1;
+    else
+    {
+        cfifo_init(&cmd_cf);
+        ascii_append_newline(&cmd_cf);
 
-//         if(ascii_hex_prefix(argv[2]))
-//           input = ascii_dec_to_uint32(argv[2]);
-//         else
-//           input = ascii_hex_to_uint32(argv[2]);
+        if(ascii_hex_prefix(argv[2]))
+          input = ascii_dec_to_uint32(argv[2]);
+        else
+          input = ascii_hex_to_uint32(argv[2]);
 
-//         while(vars[i].name)
-//         {
-//             if(!cstrcmp(argv[1], vars[i].name))
-//             {
-//                 *vars[i].pdata = input;
-//                 break;
-//             }
-//             i++;
-//         }
-//     }
+        while(v->name)
+        {
+            if(!cstrcmp(argv[1], v->name))
+            {
+                p = v->pdata;
+
+                if(v->type_mask == U32)
+                {
+                    *((uint32_t*)p) = (uint32_t)input;
+                }
+                else if(v->type_mask == U16)
+                {
+                   *((uint16_t*)p) = (uint16_t)input;
+                }
+                else
+                {
+                    *((uint8_t*)p) = (uint8_t)input;
+                }
+                break;
+            }
+            v++;;
+        }
+    }
 
      return 0;
  }
@@ -97,14 +111,18 @@ uint8_t cmd_ls(int argc, char **argv)
 
   cfifo_init(&cmd_cf);
   ascii_append_newline(&cmd_cf);
-
+  cfifo_copy_string("name        address     value\r\n", &cmd_cf);
+  cfifo_copy_string("----------------------------------\r\n", &cmd_cf);
   while(v->name)
   {
     i = cfifo_copy_string(v->name, &cmd_cf);
     ascii_append_space(&cmd_cf, 12-i);
     ascii_uint32_to_ascii_hex(&cmd_cf, v->pdata);
     ascii_append_space(&cmd_cf, 12-10);
-    ascii_uint32_to_ascii_hex(&cmd_cf, (uint8_t)*(v->pdata) ); // fix
+    if(!v->vars)
+        ascii_uint32_to_ascii_hex(&cmd_cf, (v->type_mask)&*(v->pdata) ); // fix
+    else
+        cfifo_copy_string("<struct>", &cmd_cf);
     ascii_append_newline(&cmd_cf);
     v++;
   }

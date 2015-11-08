@@ -45,8 +45,8 @@ void ascii_append_space(cfifo_t *cf, uint8_t num)
 {
   uint8_t i;
 
-    for(i = 0; i < num; i++)
-      cfifo_copy_string(" ", cf);
+  for(i = 0; i < num; i++)
+    cfifo_copy_string(" ", cf);
 }
 
 void ascii_uint32_to_ascii(cfifo_t *cf, const uint32_t input)
