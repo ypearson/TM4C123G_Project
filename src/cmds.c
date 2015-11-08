@@ -59,9 +59,9 @@ uint8_t cmd_help(int argc, char **argv)
 
                 if(v->type_mask == U32)
                 {
-                    ascii_uint32_to_ascii_hex(&cmd_cf, *(v->pdata));
+                    ascii_uint32_to_ascii_hex(&cmd_cf, *(p));
                     ascii_append_space(&cmd_cf, 16-i);
-                    ascii_uint32_to_ascii(&cmd_cf, *(v->pdata));
+                    ascii_uint32_to_ascii(&cmd_cf, *(p));
 
                 }
                 else if(v->type_mask == U16)
