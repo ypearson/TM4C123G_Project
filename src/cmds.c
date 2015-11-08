@@ -9,8 +9,8 @@ extern vars_t *var_ptr_home;
 
 cmd_t cmds[6] = {
                   {"help", "this is the usage statement for help.", cmd_help },
-                  {"ls", "this is the usage statement for hello.", cmd_ls },
-                  {"cd", "this is the usage statement for hello.", cmd_cd },
+                  {"ls", "lists exposed structs and variables names and values.", cmd_ls },
+                  {"cd", "change struct.", cmd_cd },
                   {"get", "print value of target variable.", cmd_get},
                   {"set", "set value of target variable.", cmd_set},
                   {0,0,0}};
@@ -20,17 +20,19 @@ static cfifo_t cmd_cf;
 uint8_t cmd_help(int argc, char **argv)
 {
     uint8_t i = 0;
+    uint8_t cnt = 0;
     cfifo_init(&cmd_cf);
+    cfifo_copy_string("\r\ncommand         description\r\n", &cmd_cf);
+    cfifo_copy_string("---------------------------------------------------", &cmd_cf);
 
     while(cmds[i].name)
     {
         ascii_append_newline(&cmd_cf);
-        cfifo_copy_string(cmds[i].name, &cmd_cf);
-        ascii_append_space(&cmd_cf, 8);
+        cnt = cfifo_copy_string(cmds[i].name, &cmd_cf);
+        ascii_append_space(&cmd_cf, 16-cnt);
         cfifo_copy_string(cmds[i].usage, &cmd_cf);
         i++;
     }
-    ascii_append_newline(&cmd_cf);
     return 0;
 }
 
