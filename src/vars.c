@@ -11,7 +11,9 @@
 //     void      *vars;
 // } vars_t;
 
-
+#define U32 (0xffffffff)
+#define U16 (0x0000ffff)
+#define U8  (0x000000ff)
 
 timer_t timer = {0, {{"cnt1", &timer.cnt1, U32, 0},{0,0,0}} };
 

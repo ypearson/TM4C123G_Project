@@ -110,7 +110,7 @@ void uart_cli(uart_t *uart)
         {
             cfifo_init(uart->cf);
             cfifo_to_cfifo_transfer(uart->ucf, uart->cf);
-            process_cmd(uart->cf);
+            cmd_process_user_input(uart->cf);
         }
         uart->print(uart->self, uart->cf);
         uart->print_string(uart->self, ascii_get_prompt() );
