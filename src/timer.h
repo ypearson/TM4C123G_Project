@@ -12,9 +12,26 @@ typedef struct
 
 typedef struct
 {
-	int     (*action[4])(int argc, char **argv);
-	uint16_t  time_to_action;
-} time_action_t;
+	uint32_t   tick;
+} clock_t;
+
+
+typedef enum {ONE_SHOT, REPEAT} pmode_t;
+
+typedef struct
+{
+	int     (*start[4])(int argc, char **argv);
+	uint32_t  delay;
+	uint32_t  start;
+	pmode_t   mode;
+} action_group_t;
+
+typedef struct
+{
+	clock_t clock;
+	action_group_t actions[];
+
+} stimer_t;
 
 extern timer_t timer;
 static timer_t *ptimer = &timer;
