@@ -8,8 +8,13 @@ typedef struct
 {
 	uint32_t   cnt1;
 	vars_t   vars[];
-
 } timer_t;
+
+typedef struct
+{
+	int     (*action[4])(int argc, char **argv);
+	uint16_t  time_to_action;
+} time_action_t;
 
 extern timer_t timer;
 static timer_t *ptimer = &timer;
