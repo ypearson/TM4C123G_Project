@@ -29,10 +29,10 @@ sensor_t SVAR = {27,21,90,21,15,116,{
                  VAR_END()}};
 
 
-VARS = { STRUCT(timer)
-         STRUCT(sensor0)
-         STRUCT(sensor1)
-         STRUCT_END()};
+vars_t vars[] = { STRUCT(timer)
+                  STRUCT(sensor0)
+                  STRUCT(sensor1)
+                  STRUCT_END()};
 
 vars_t *var_ptr = &vars;
 vars_t * const var_ptr_home = &vars;
